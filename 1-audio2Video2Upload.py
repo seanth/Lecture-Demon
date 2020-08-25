@@ -1,10 +1,4 @@
 #!/usr/bin/python
-#need to install:
-#http.client
-#pip install oauth2client
-#google_auth_oauthlib
-#python-dateutil
-
 
 import argparse, glob, os, math, time, sys, json, datetime
 
@@ -12,25 +6,27 @@ import argparse, glob, os, math, time, sys, json, datetime
 #The httplib module has been renamed to http.client in Python 3.
 #import httplib
 import http.client
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta #python3 -m pip install python-dateutil
 
-import httplib2
+import httplib2 #python3 -m pip install httplib2
 import os
 import random
 import time
 
-from oauth2client.file import Storage # Added
-from oauth2client import client # Added
-from oauth2client import tools # Added
+from oauth2client.file import Storage # python3 -m pip install oauth2client
+from oauth2client import client 
+from oauth2client import tools 
 from oauth2client.client import flow_from_clientsecrets
-
-import google.oauth2.credentials
-import google_auth_oauthlib.flow
 from oauth2client.tools import run_flow
-from googleapiclient.discovery import build
+
+import google.oauth2.credentials #python3 -m pip install google-auth-oauthlib
+import google_auth_oauthlib.flow
+from google_auth_oauthlib.flow import InstalledAppFlow
+
+from googleapiclient.discovery import build #python3 -m pip install google-api-python-client
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
-from google_auth_oauthlib.flow import InstalledAppFlow
+
 
 # Explicitly tell the underlying HTTP transport library not to retry, since
 # we are handling retry logic ourselves.
@@ -257,6 +253,8 @@ if __name__ == '__main__':
     aTest = pathExists(args.theAudioDirIn)
     if aTest:
         args.theAudioDirIn = aTest
+
+    aTest = pathExists("output")
 
     aTest = pathExists(args.theAudioDirOut)
     if aTest:
