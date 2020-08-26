@@ -1,7 +1,7 @@
 import os, sys, glob, random, datetime, textwrap, argparse
-from dateutil.relativedelta import relativedelta
 
-from PIL import Image, ImageDraw, ImageFont #pip install Pillow
+from dateutil.relativedelta import relativedelta
+from PIL import Image, ImageDraw, ImageFont 
 
 brandingImagePath = 'autodipop_data/logo-white.png'
 
