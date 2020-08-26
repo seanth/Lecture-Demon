@@ -2,6 +2,7 @@ import os, sys, csv, glob, argparse
 
 import pandas as pd #pip install pandas
 import nltk #pip install nltk
+nltk.download('averaged_perceptron_tagger')
 nltk.download('universal_tagset')
 
 
