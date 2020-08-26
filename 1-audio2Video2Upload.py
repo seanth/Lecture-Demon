@@ -220,7 +220,7 @@ def resumable_upload(request, theVideoFileName):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Who wants some popcorn?')
     parser.add_argument('--audio', metavar='', dest='boostAudio', default=True, required=False, help='boost the audio?' )
-    parser.add_argument('--video', metavar='', dest='makeVideo', default=True, required=False, help='make a simple video with boosted audio?' )
+    parser.add_argument('--video', metavar='', dest='makeVideo', default=True, required=False, help='make a simple video with the provided||boosted audio?' )
     parser.add_argument('--upload', metavar='', dest='uploadVideo', default=True, required=False, help='upload simple video?' )
     parser.add_argument('--audioIn', metavar='', dest='theAudioDirIn', default='raw_audio', required=False, help='path to folder containing mp3s' )
     parser.add_argument('--audioOut', metavar='', dest='theAudioDirOut', default='output/processed_audio', required=False, help='path to folder containing mp3s')
@@ -230,8 +230,6 @@ if __name__ == '__main__':
     parser.add_argument('--keywords', help='Video keywords, comma separated', default='')
     parser.add_argument('--privacy-status', metavar='', dest='privacy_status', default='unlisted', required=False, help='options are: public, private, unlisted' )
     args = parser.parse_args()
-
-    print(args)
 
     ###################################
     #needed for the youtube api stuff
@@ -287,7 +285,18 @@ if __name__ == '__main__':
             print("\n     Audio file '%s' found" % theFileName)
             print("       Sending file to ffmpeg to process audio.....")
             theCommand = "ffmpeg -i '%s' -ac 1 -filter:a loudnorm -b:a 128k '%s' >/dev/null" % (theFileName, theAudioOutPath)
-            print(theCommand)
+            #print(theCommand)
+            os.system(theCommand)
+    else:
+        tempVar = os.path.join(args.theAudioDirIn, "*.mp3")
+        print(tempVar)
+        for theFileName in glob.glob(tempVar):
+            theAudioFileName = os.path.basename(theFileName)
+            theAudioFileName = os.path.splitext(theAudioFileName)[0]
+            theAudioOutPath = os.path.join(args.theAudioDirOut,theAudioFileName+".mp3")
+            print("\n     Audio file '%s' found" % theFileName)
+            print("       Copying file to correct processing folder.....")
+            theCommand = "cp '%s' '%s'" % (theFileName, theAudioOutPath)
             os.system(theCommand)
 
     if(args.makeVideo==True):
