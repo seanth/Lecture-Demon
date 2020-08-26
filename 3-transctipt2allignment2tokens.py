@@ -7,7 +7,7 @@ nltk.download('universal_tagset')
 
 from youtube_transcript_api import YouTubeTranscriptApi
 
-pathToGentle = 'autodipop_data/gentle'
+pathToGentle = 'autodipop_data/gentle-master'
 broadcastIDFileName = 'broadcast_id_archive.csv'
 
 #########################################################################################
