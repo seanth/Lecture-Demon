@@ -1,16 +1,15 @@
 import datetime, os, sys, argparse, glob, re, json, itertools
 
-import pandas as pd                         #python3 -m pip install syllables
-import srt 			                        #python3 -m pip install srt
-from moviepy.editor import VideoFileClip    #python3 -m pip install moviepy
+import pandas as pd                         
+import srt 			                        
+from moviepy.editor import VideoFileClip    
 from moviepy.editor import *
 from moviepy.audio.AudioClip import AudioArrayClip
 
-from PIL import Image                       #python3 -m pip install pillow
-from pydub import AudioSegment              #python3 -m pip install pydub
-import audiosegment                         #python3 -m pip install audiosegment
-#import ast
-import ffmpeg                               #python3 -m pip install ffmpeg-python
+from PIL import Image                       
+from pydub import AudioSegment              
+import audiosegment as audiosegwrap                         
+import ffmpeg                               
 
 
 theLeaderImage = "autodipop_data/leaderImage.png"
@@ -60,7 +59,11 @@ def pydub_to_moviepy(theAudio, frameRate):
         #needs to be stereo for the conversion to a numpy arry to be OK
         #for then being used by moviepy
         print("          Changing number of audio channels to two(2)...")
-        theAudio = audiosegment.from_mono_audiosegments(theAudio, theAudio)
+        theAudio = audiosegwrap.from_mono_audiosegments(theAudio, theAudio)
+    else:
+        test = audiosegwrap.empty()
+        theAudio = test+theAudio
+
     print("          Converting audio to numpy array...")
     theAudio = theAudio.to_numpy_array() #pydub convert to a numpy array
     #convert pydup numpy array to what moviepy wants
