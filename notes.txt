@@ -1,3 +1,20 @@
+After processing raw audio, move to a "processed" subfolder
+After uploading temp video, move to a "processed" subfolder
+Add a time increasing loop that automatically checks to see whether a transcript is ready
+Add a way to give widthxheight for slate
+Don't skew subimage for slate
+Make it to 'start' meta can be on video media
+allow 'start' meta to be stacked with other meta
+
+
+notes:
+	'stop' needs a slide present in the media column. It can't be alone
+	example video meta: video:mute;loop;duration:53.58
+						duration:51.1;video:mute
+						duration:74;lecture:mute
+	subtitles cat use the 'duration' meta
+
+
 #1-audio2Video2Upload
 python3 -m pip install python-dateutil
 python3 -m pip install httplib2
@@ -19,3 +36,12 @@ https://github.com/seanth/gentle/archive/master.zip --> autodipop_data/gentle-ma
 https://github.com/kaldi-asr/kaldi/archive/7ffc9ddeb3c8436e16aece88364462c89672a183.zip --> autodipop_data/gentle-master/ext; rename folder to 'kaldi'
 	cd autodipop_data/gentle-master
 	./install.sh
+
+#4-editAudio_makeSRTV_makeVideo
+python3 -m pip install pandas
+python3 -m pip install srt
+python3 -m pip install moviepy
+python3 -m pip install Pillow
+python3 -m pip install pydub
+python3 -m pip install audiosegment
+python3 -m pip install ffmpeg-python
