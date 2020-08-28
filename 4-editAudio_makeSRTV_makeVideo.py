@@ -332,7 +332,6 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
         theStart = float(startDataList[theSRTVIndexList[i]])
         theStop = ""
         theMetaList= [x.strip() for x in theMeta.split(';')]
-
         if i == len(theSRTVIndexList)-1:
             #this just pads the ends so last slide stays up to the end
             theStop = float(lectureStopTime+outroDuration)
@@ -362,7 +361,6 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
             #this section is for audio replace
             theStop = float(stopDataList[theSRTVIndexList[i]])
         elif theFileSuffix == "" or (os.path.exists(os.path.join(theSlideDir,theSlideList[theSRTVIndexList[i]])) == False):
-            print(theSlide)
             #this section is for text overlays
             #need to have it written to a unique srt file
             #lectureStartTime = datetime.timedelta(seconds=lectureStartTime) #convert to datetime
@@ -390,15 +388,28 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
             theSRTList.append(srt.Subtitle(i,theStart,theStop,theSlide,theMeta))
             continue #move to the next item in theSRTVIndexList
         else:
-            print(theSlide)
             #this is sort of complicated
             #a slide image should end when the next slide OR video starts
             #it should not end when an audio clip begins
             #it should not end when a text overlay beings
             #so if the following entries are an audio clip OR a text overlay, ignore it
-            while (os.path.splitext(theSlideList[theSRTVIndexList[i+1]])[1] in audioSuffixList) or (os.path.exists(os.path.join(theSlideDir,theSlideList[theSRTVIndexList[i+1]])) == False):
-                i=i+1
-            theStop = float(startDataList[theSRTVIndexList[i+1]])
+            ####NEW
+            #start parsing the meta data
+            for aMetaArg in theMetaList:
+                ###########################
+                #split the arg and values
+                theMetaArgList = [x.strip() for x in aMetaArg.split(':')]
+                theArg = theMetaArgList[0]
+                if len(theMetaArgList)>1: theValue = theMetaArgList[1]
+                ###########################
+                if theArg == "duration":
+                    #if an explicit duration is provided, use that
+                    theStop = float(theStart+float(theValue))
+            ############
+            if theStop=="":
+                while (os.path.splitext(theSlideList[theSRTVIndexList[i+1]])[1] in audioSuffixList) or (os.path.exists(os.path.join(theSlideDir,theSlideList[theSRTVIndexList[i+1]])) == False):
+                    i=i+1
+                theStop = float(startDataList[theSRTVIndexList[i+1]])
 
         theStart = datetime.timedelta(seconds=theStart) #convert to datetime
         theStop = datetime.timedelta(seconds=theStop) #convert to datetime
