@@ -219,7 +219,7 @@ def resumable_upload(request, theVideoFileName):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Who wants some popcorn?')
-    parser.add_argument('--audio', metavar='', dest='boostAudio', default=True, required=False, help='boost the audio?' )
+    parser.add_argument('--audio', metavar='', dest='boostAudio', default=False, required=False, help='boost the audio?' )
     parser.add_argument('--video', metavar='', dest='makeVideo', default=True, required=False, help='make a simple video with the provided||boosted audio?' )
     parser.add_argument('--upload', metavar='', dest='uploadVideo', default=True, required=False, help='upload simple video?' )
     parser.add_argument('--audioIn', metavar='', dest='theAudioDirIn', default='raw_audio', required=False, help='path to folder containing mp3s' )
