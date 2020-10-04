@@ -9,6 +9,10 @@ Make sure color profile is RGB. Crashes trying to use greyscale
 If no explicit start given, errors out doing an theStartOffset calc
 Gentle does not like file names with "'" (like "Live's")
 Have the end meta marker be either 'end' or 'stop'
+Add ability to auto insert a demonThx slide at 'stop' mark, along with 5sec lead into it
+Improve the start slate to start of lecture so audio runs over it instead of 5 sec silence
+Allow for different font sizes for subtitles? Is that possible?
+Increase default size of embedded videos when they are smaller than slide width/height
 
 
 
