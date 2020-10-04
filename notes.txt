@@ -3,8 +3,14 @@ After uploading temp video, move to a "processed" subfolder
 Add a time increasing loop that automatically checks to see whether a transcript is ready
 Add a way to give widthxheight for slate
 Don't skew subimage for slate
-Make it to 'start' meta can be on video media
+Make it so 'start' meta can be on video media
 allow 'start' meta to be stacked with other meta
+Make sure color profile is RGB. Crashes trying to use greyscale
+If no explicit start given, errors out doing an theStartOffset calc
+Gentle does not like file names with "'" (like "Live's")
+Have the end meta marker be either 'end' or 'stop'
+
+
 
 
 notes:
@@ -12,7 +18,12 @@ notes:
 	example video meta: video:mute;loop;duration:53.58
 						duration:51.1;video:mute
 						duration:74;lecture:mute
-	subtitles cat use the 'duration' meta
+	subtitles can use the 'duration' meta
+	if you don't provide a specific duration for a looping video, it will exit the loop if you put on a subtitle
+	to cut, use notation like "cut":{"duration":time in seconds}
+	cut example:
+		../../../img_library/black.png	
+						"cut":{"duration":635.009999}
 
 
 #1-audio2Video2Upload
@@ -37,7 +48,14 @@ https://github.com/kaldi-asr/kaldi/archive/7ffc9ddeb3c8436e16aece88364462c89672a
 	cd autodipop_data/gentle-master
 	./install.sh
 
-#4-editAudio_makeSRTV_makeVideo
+
+
+#4-xmlParseAlignTiming
+python3 -m pip install natsort
+python3 -m pip install pandas
+
+
+#5-editAudio_makeSRTV_makeVideo
 python3 -m pip install pandas
 python3 -m pip install srt
 python3 -m pip install moviepy
