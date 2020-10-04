@@ -37,7 +37,7 @@ def pathExists(thePath):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Who wants some popcorn?')
-    parser.add_argument('--path', metavar='', dest='thePath', required=True, help='Path to the image file to use OR the folde containing images' )
+    parser.add_argument('--path', metavar='', dest='thePath', required=True, help='Path to the image file to use OR the folder containing images' )
     parser.add_argument('--course', metavar='', dest='className', required=True, help='Name of the course' )
     parser.add_argument('--lecture', metavar='', dest='theLectureName', default='', required=False, help='Lecture name' )
     args = parser.parse_args()
@@ -95,6 +95,8 @@ if __name__ == '__main__':
 
 
     newImg = Image.new('RGB', (theWidth,theHeight), color = 'black')
+    #newImg = Image.new('RGB', (1080,810), color = 'black')
+    #newImg = Image.new('RGB', (720,540), color = 'black')
 
     gutter=20
     newImg.paste(subImage,(gutter,gutter))
