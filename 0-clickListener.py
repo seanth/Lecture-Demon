@@ -1,5 +1,9 @@
 import logging
 import sys
+import time
+
+global theStart
+theStart=time.time()
 
 #https://pypi.org/project/pynput/
 from pynput.keyboard import Key, Listener, KeyCode
@@ -7,12 +11,20 @@ from pynput.keyboard import Key, Listener, KeyCode
 logging.basicConfig(filename=("lectureTiming.txt"), filemode='w', level=logging.DEBUG, format='%(asctime)s, %(message)s')
 
 def on_press(key):
+    global theStart
     if (key == KeyCode.from_char('b') or
             key == Key.page_down or
             key == Key.page_up):
-        logging.info(str(key))
+        theNow = time.time()
+        theDelta = theNow-theStart
+        #logging.info(str(key))
+        logging.info(str(theDelta))
+        theStart = theNow
     elif key == Key.esc:
-        logging.info(str(key))
+        theNow = time.time()
+        theDelta = theNow-theStart
+        #logging.info(str(key))
+        logging.info(str(theDelta))
         Listener.stop
         sys.exit()
 
