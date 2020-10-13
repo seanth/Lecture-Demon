@@ -12,7 +12,7 @@ import audiosegment as audiosegwrap
 import ffmpeg                               
 
 
-theLeaderImage = "autodipop_data/leaderImage.png"
+theLeaderImage = "lecture-daemon_data/leaderImage.png"
 
 videoSuffixList = ['.mp4', '.m4v', '.mov']
 audioSuffixList = ['.aiff', '.mp3', '.wav', ".m4a"]
@@ -334,7 +334,8 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
         theMetaList= [x.strip() for x in theMeta.split(';')]
         if i == len(theSRTVIndexList)-1:
             #this just pads the ends so last slide stays up to the end
-            theStop = float(lectureStopTime+outroDuration)
+            lectureStopTime = float(lectureStopTime)
+            theStop = float(lectureStopTime+(outroDuration))
         elif theFileSuffix in videoSuffixList:
             #read in the video clip
             theVideoClip = VideoFileClip(theSlide)
@@ -543,6 +544,7 @@ def processAudio(theSRTVList, theAudioDir, theLectureName, lectureStartTime, lec
             print("          Loading audio file %s" % audioFilePath)
             theLectureAudio = AudioSegment.from_file(audioFilePath)
         print("          Editing audio length")
+        lectureStopTime = float(lectureStopTime)
         theLectureAudio = theLectureAudio[int(lectureStartTime*1000.0):int(lectureStopTime*1000.0)]
         madeAnAudioEdit = True
 
@@ -812,7 +814,11 @@ def makeVideoFromSRTVList(theSRTVList, theSlideDir, audioFilePath, theLectureNam
         return cutList
 
     else:
-        print("Slate slide not found")
+        ###should be moved up with other initial checks
+        theFeedback="     Path '%s' found:    %s"
+        print(theFeedback % (theSlate, "FALSE"))
+        print("        Exiting.")
+        sys.exit()
 
 
 if __name__ == '__main__':

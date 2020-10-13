@@ -118,7 +118,7 @@ def fileTypeExists(theFolderName, theFileSuffix):
     theFeedback="     %s files found in input folder: %s"
     if len(glob.glob(tempVar))<1:
         print(theFeedback % (theFileSuffix, "FALSE"))
-        sys.exit()
+        #sys.exit()
     else:
         print(theFeedback % (theFileSuffix, "TRUE"))
 
@@ -178,6 +178,15 @@ def initialize_upload(youtube, options, theVideoFileName):
     media_body=MediaFileUpload(options.file, chunksize=-1, resumable=True)
   )
 
+  # print(dir(insert_request))
+  # print(insert_request.body)
+  # print(insert_request.body_size)
+  # print(insert_request.execute)
+  # print(insert_request.headers)
+  # print(dir(insert_request.http))
+  # print(insert_request.method)
+  # print(insert_request.uri)
+  # sys.exit()
   resumable_upload(insert_request, theVideoFileName)
 
 # This method implements an exponential backoff strategy to resume a
@@ -201,6 +210,7 @@ def resumable_upload(request, theVideoFileName):
         if e.resp.status in RETRIABLE_STATUS_CODES:
             error = '          A retriable HTTP error %d occurred:\n%s' % (e.resp.status, e.content)
         else:
+            print(e)
             raise
     #except RETRIABLE_EXCEPTIONS, e:
     except RETRIABLE_EXCEPTIONS as e:
@@ -224,7 +234,7 @@ if __name__ == '__main__':
     parser.add_argument('--upload', metavar='', dest='uploadVideo', default=True, required=False, help='upload simple video?' )
     parser.add_argument('--audioIn', metavar='', dest='theAudioDirIn', default='raw_audio', required=False, help='path to folder containing mp3s' )
     parser.add_argument('--audioOut', metavar='', dest='theAudioDirOut', default='output/processed_audio', required=False, help='path to folder containing mp3s')
-    parser.add_argument('--image', metavar='', dest='theImagePath', default='autodipop_data/testPattern.png', required=False, help='path to still image to use for video')
+    parser.add_argument('--image', metavar='', dest='theImagePath', default='lecture-daemon_data/testPattern.png', required=False, help='path to still image to use for video')
     parser.add_argument('--videoOut', metavar='', dest='theRawVideoDir', default='output/temp_video', required=False, help='path to the folder videos will be written to')
     parser.add_argument('--category', default='27', help='Numeric video category. ' + 'See https://developers.google.com/youtube/v3/docs/videoCategories/list')
     parser.add_argument('--keywords', help='Video keywords, comma separated', default='')

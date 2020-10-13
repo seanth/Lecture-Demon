@@ -72,7 +72,7 @@ def slideTiming(theFilePath,xmlList):
         xmlTree=ET.iterparse(theFileData, events=("start", "end"))
         xmlTree =iter(xmlTree)
         #the event will be either the start <b> of something or the end </b>
-        theDuration = ''
+        theDuration = 0.0
         for theEvent,theElement in xmlTree:
             if theEvent == "start" and 'advTm' in theElement.keys():
                 theDuration = theElement.get('advTm')
@@ -80,6 +80,7 @@ def slideTiming(theFilePath,xmlList):
                     exit
         #the duration is in milliseconds.
         #convert to seconds
+        print(theDuration)
         theDuration = float(theDuration)/1000.0
         timingList.append([theDuration,theSlideName])
     theArchive.close()
@@ -168,25 +169,25 @@ def insertTimings(theAlignmentFile, theTimingFile):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Who wants some popcorn?')
-    parser.add_argument('--path', metavar='', dest='thePath', required=True, help='Path to the powerpoint file OR path to the timing csv' )
-    parser.add_argument('--timing', metavar='', dest='makeTiming', default=True, required=False, help='read pptx and making timing csv?' )
+    parser.add_argument('--path', dest='thePath', required=True, help='Path to the powerpoint file OR path to the timing csv' )
+    parser.add_argument('--timing', metavar='', dest='makeTiming', default=True, required=False, help='read pptx and make timing csv?' )
     parser.add_argument('--align', metavar='', dest='mergeTiming', default=True, required=False, help='insert slide timing to alignment csv?' )
 
     parser.add_argument('--timingDir', metavar='', dest='theTimingDir', default='output/lecture_timing', required=False, help='path to place timings')
     parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='output/lecture_alignments', required=False, help='path to place alignments')
+    
     args = parser.parse_args()
 
     #check and see whether destination folders exist
     theAlignmentDir = pathExistsMake(args.theAlignmentDir)
     theTimingDir = pathExistsMake(args.theTimingDir, True)
 
-    theBaseName = ''
-    if args.makeTiming == True:
-        #does the pptx file exit?
-        theFilePath = pathExists(args.thePath)
-        theBaseName = os.path.basename(theFilePath)
-        theBaseName = os.path.splitext(theBaseName)[0]
-        
+    #does the  file exit?
+    theFilePath = pathExists(args.thePath)
+    theBaseName = os.path.basename(theFilePath)
+    theBaseName = os.path.splitext(theBaseName)[0]
+
+    if args.makeTiming == True:        
         xmlFileList = pptxSlideXML(theFilePath)
         #print(xmlFileList)
 
@@ -196,11 +197,9 @@ if __name__ == '__main__':
         
         saveTiming(timingList, theTimingDir, theBaseName)
 
+
     if args.mergeTiming == True:
-        if theBaseName == '':
-            theFilePath = pathExists(args.thePath)
-            theBaseName = os.path.basename(theFilePath)
-            theBaseName = os.path.splitext(theBaseName)[0]
+        theBaseName = theBaseName.strip("-timing")
         #does the alignment file exist?
         theAlignmentFilePath = os.path.join(theAlignmentDir,theBaseName+".csv")
         theAlignmentFilePath = pathExists(theAlignmentFilePath)

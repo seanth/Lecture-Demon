@@ -3,7 +3,7 @@ import os, sys, glob, random, datetime, textwrap, argparse
 from dateutil.relativedelta import relativedelta
 from PIL import Image, ImageDraw, ImageFont 
 
-brandingImagePath = 'autodipop_data/logo-white.png'
+brandingImagePath = 'lecture-daemon_data/logo-white.png'
 
 theSlideDir = 'output/lecture_slides'
 
