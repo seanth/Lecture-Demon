@@ -8,7 +8,8 @@ theStart=time.time()
 #https://pypi.org/project/pynput/
 from pynput.keyboard import Key, Listener, KeyCode
 
-logging.basicConfig(filename=("lectureTiming.txt"), filemode='w', level=logging.DEBUG, format='%(asctime)s, %(message)s')
+#logging.basicConfig(filename=("lectureTiming.txt"), filemode='w', level=logging.DEBUG, format='%(asctime)s, %(message)s')
+logging.basicConfig(filename=("lectureTiming.txt"), filemode='w', level=logging.DEBUG, format='%(message)s')
 
 def on_press(key):
     global theStart
