@@ -1,19 +1,23 @@
-After processing raw audio, move to a "processed" subfolder
-After uploading temp video, move to a "processed" subfolder
-Add a time increasing loop that automatically checks to see whether a transcript is ready
-Add a way to give widthxheight for slate
-Don't skew subimage for slate
-Make it so 'start' meta can be on video media
-allow 'start' meta to be stacked with other meta
-Make sure color profile is RGB. Crashes trying to use greyscale
-If no explicit start given, errors out doing an theStartOffset calc
-Gentle does not like file names with "'" (like "Live's")
-Have the end meta marker be either 'end' or 'stop'
-Add ability to auto insert a demonThx slide at 'stop' mark, along with 5sec lead into it
-Improve the start slate to start of lecture so audio runs over it instead of 5 sec silence
-Allow for different font sizes for subtitles? Is that possible?
-Increase default size of embedded videos when they are smaller than slide width/height
-
+-After processing raw audio, move to a "processed" subfolder
+-After uploading temp video, move to a "processed" subfolder
+-Add a way to give widthxheight for slate
+-Don't skew subimage for slate
+-Make it so 'start' meta can be on video media
+-allow 'start' meta to be stacked with other meta
+-Make sure color profile is RGB. Crashes trying to use greyscale
+-If no explicit start given, errors out doing an theStartOffset calc
+-Gentle does not like file names with "'" (like "Live's")
+-Have the end meta marker be either 'end' or 'stop'
+-Add ability to auto insert a demonThx slide at 'stop' mark, along with 5sec lead into it
+-Improve the start slate to start of lecture so audio runs over it instead of 5 sec silence
+-Allow for different font sizes for subtitles? Is that possible?
+-Increase default size of embedded videos when they are smaller than slide width/height
+-Fix bug where cuts are made only if a set subtitle is added
+-Cut statements before a start statement cause it to crash out
+-Add a time increasing loop that automatically checks to see whether a transcript is ready
+	-Need a way to see to the video is blocked because of copyright. If blocked, no transcript it generated
+	-https://stackoverflow.com/questions/44695787/is-their-a-way-to-list-the-copyright-claims-of-your-video-on-youtube-using-youtu
+If providing a path to a csv ve a pptx for 4-xmlParseAlignTiming.py, --timing is False
 
 
 
@@ -67,3 +71,9 @@ python3 -m pip install Pillow
 python3 -m pip install pydub
 python3 -m pip install audiosegment
 python3 -m pip install ffmpeg-python
+
+#######experiment with identifying speakers
+got download https://github.com/tyiannak/pyAudioAnalysis
+Cd to dir
+python3 -m pip install -r requirements.txt
+Python3 -m pip install -e
