@@ -1,0 +1,31 @@
+For recitations:
+
+Step 1: Make the video that uses the audio. Video element is a still image
+
+ffmpeg -loop 1 -i 'output/lecture_slides/17 -- Food redux - 2020/Slide51.png' -i 'output/lecture_slides/17 -- Food redux - 2020/media4.mp3' -c:a copy -shortest -pix_fmt yuv420p 'output/temp_video/media3.mp4' >/dev/null
+
+ffmpeg -loop 1 -i 'output/lecture_slides/17 -- Food redux - 2020/Slide51.png' -i 'output/lecture_slides/17 -- Food redux - 2020/media4.mp3' -c:a aac -shortest -pix_fmt yuv420p 'output/temp_video/media4.mp4' >/dev/null
+
+Step 2: stitch in a slate image
+
+ffmpeg -i 'output/temp_video/Biosphere 23 -- Biogeography and Invasive Species pt 2 - 2020.mp4' -loop 1 -t 5 -i 'output/lecture_slides/Biosphere 23 -- Biogeography and Invasive Species pt 2 - 2020/Slide0.png' \
+      -filter_complex \
+"[1]fade=t=in:st=0:d=0.500000,fade=t=out:st=3.000000:d=0.500000,setsar=1[i]; \
+ [i][0]concat=n=2:v=1:a=0" \
+ -c:v libx264 -crf 23 -pix_fmt yuv420p 'output/candidate_video/Biosphere 23 -- Biogeography and Invasive Species pt 2 - 2020.mp4'
+
+
+########
+to get media duration:
+ffmpeg -i file.flv 2>&1 | grep "Duration"
+
+
+
+ffmpeg -i 'output/temp_video/Biosphere 19 -- Energizing the Biosphere, pt 2 - 2020.mp4' -loop 1 -t 5 -i 'output/lecture_slides/Biosphere 19 -- Energizing the Biosphere, pt 2 - 2020/Slide0.png' \
+      -filter_complex \
+"[1]fade=t=in:st=0:d=0.500000,fade=t=out:st=3.000000:d=0.500000,setsar=1[i]; \
+ [i][0]concat=n=2:v=1:a=0" \
+ -c:v libx264 -crf 23 -pix_fmt yuv420p 'output/candidate_video/Biosphere 19 -- Energizing the Biosphere, pt 2 - 2020.mp4'
+
+
+
