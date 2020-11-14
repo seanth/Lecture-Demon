@@ -312,7 +312,7 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
                     theStart = float(startDataList[i])
                     theStop = theStart+theDuration
                     theIndex = len(theSRTVList)+1
-                    print("                %s --> %s" %(datetime.timedelta(seconds=theStart+float(lectureStartTime)), datetime.timedelta(seconds=theStop+float(lectureStartTime))))
+                    print("Cut at                %s --> %s" %(datetime.timedelta(seconds=theStart+float(lectureStartTime)), datetime.timedelta(seconds=theStop+float(lectureStartTime))))
                     theStart = datetime.timedelta(seconds=theStart) #convert to datetime
                     theStop = datetime.timedelta(seconds=theStop) #convert to datetime
 
@@ -545,6 +545,12 @@ def processAudio(theSRTVList, theAudioDir, theLectureName, lectureStartTime, lec
             theLectureAudio = AudioSegment.from_file(audioFilePath)
         print("          Editing audio length")
         lectureStopTime = float(lectureStopTime)
+        #############
+        #weird bug where _sometimes_ the start time is seen as a string
+        # print(type(lectureStartTime)) 
+        # print(type(lectureStopTime))
+        lectureStartTime = float(lectureStartTime)
+        #############
         theLectureAudio = theLectureAudio[int(lectureStartTime*1000.0):int(lectureStopTime*1000.0)]
         madeAnAudioEdit = True
 
@@ -811,6 +817,7 @@ def makeVideoFromSRTVList(theSRTVList, theSlideDir, audioFilePath, theLectureNam
 
         ################################################################################
         finalVideo.write_videofile(theCandidateVideoPath, fps=12, audio=True, write_logfile=False, threads=4)
+        print(cutList)
         return cutList
 
     else:
@@ -925,7 +932,8 @@ if __name__ == '__main__':
             #print(ffmpeg.compile(stream))
             ffmpeg.run(stream)
             theVideoFileName = theCandidateVideoPath
-
+        print("**********")
+        print(cutList)
         if cutList !=[]: 
             print("         Attempting to make cuts to video...")
             stream = ffmpeg.input(theVideoFileName)
