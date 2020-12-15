@@ -12,12 +12,14 @@
 -Improve the start slate to start of lecture so audio runs over it instead of 5 sec silence
 -Allow for different font sizes for subtitles? Is that possible?
 -Increase default size of embedded videos when they are smaller than slide width/height
--Fix bug where cuts are made only if a set subtitle is added
+-****Fix bug where cuts are made only if a set subtitle is added
 -Cut statements before a start statement cause it to crash out
 -Add a time increasing loop that automatically checks to see whether a transcript is ready
 	-Need a way to see to the video is blocked because of copyright. If blocked, no transcript it generated
 	-https://stackoverflow.com/questions/44695787/is-their-a-way-to-list-the-copyright-claims-of-your-video-on-youtube-using-youtu
 If providing a path to a csv ve a pptx for 4-xmlParseAlignTiming.py, --timing is False
+-remove trailing spaces from subtitle text so that if they are files they will match
+-allow for a duration ability when replacing audio
 
 
 
