@@ -55,7 +55,7 @@ RETRIABLE_STATUS_CODES = [500, 502, 503, 504]
 #   https://developers.google.com/youtube/v3/guides/authentication
 # For more information about the client_secrets.json file format, see:
 #   https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
-CLIENT_SECRETS_FILE = 'filled_client_secrets.json'
+CLIENT_SECRETS_FILE = 'lecture-daemon_data/filled_client_secrets.json'
 
 # This variable defines a message to display if the CLIENT_SECRETS_FILE is
 # missing.
@@ -82,7 +82,7 @@ YOUTUBE_API_VERSION = "v3"
 
 VALID_PRIVACY_STATUSES = ('public', 'private', 'unlisted')
 
-broadcastIDFileName = 'broadcast_id_archive.csv'
+broadcastIDFileName = 'lecture-daemon_data/broadcast_id_archive.csv'
 ################################################################
 
 def saveVideoID(theID,theVideoFileName):
@@ -136,7 +136,7 @@ def booleanCheck(theVariable):
 def get_authenticated_service(args):
     flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE, scope=SCOPES, message=MISSING_CLIENT_SECRETS_MESSAGE)
 
-    storage = Storage("%s-oauth2.json" % sys.argv[0])
+    storage = Storage("lecture-daemon_data/%s-oauth2.json" % sys.argv[0])
     credentials = storage.get()
     if credentials is None or credentials.invalid:
         credentials = run_flow(flow, storage, args)
@@ -232,7 +232,7 @@ if __name__ == '__main__':
     parser.add_argument('--audio', metavar='', dest='boostAudio', default=False, required=False, help='boost the audio?' )
     parser.add_argument('--video', metavar='', dest='makeVideo', default=True, required=False, help='make a simple video with the provided||boosted audio?' )
     parser.add_argument('--upload', metavar='', dest='uploadVideo', default=True, required=False, help='upload simple video?' )
-    parser.add_argument('--audioIn', metavar='', dest='theAudioDirIn', default='raw_audio', required=False, help='path to folder containing mp3s' )
+    parser.add_argument('--audioIn', metavar='', dest='theAudioDirIn', default='input/raw_audio', required=False, help='path to folder containing mp3s' )
     parser.add_argument('--audioOut', metavar='', dest='theAudioDirOut', default='output/processed_audio', required=False, help='path to folder containing mp3s')
     parser.add_argument('--image', metavar='', dest='theImagePath', default='lecture-daemon_data/testPattern.png', required=False, help='path to still image to use for video')
     parser.add_argument('--videoOut', metavar='', dest='theRawVideoDir', default='output/temp_video', required=False, help='path to the folder videos will be written to')

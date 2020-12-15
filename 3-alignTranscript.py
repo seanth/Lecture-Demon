@@ -9,7 +9,7 @@ nltk.download('universal_tagset')
 from youtube_transcript_api import YouTubeTranscriptApi
 
 pathToGentle = 'lecture-daemon_data/gentle-master'
-broadcastIDFileName = 'broadcast_id_archive.csv'
+broadcastIDFileName = 'lecture-daemon_data/broadcast_id_archive.csv'
 
 #########################################################################################
 # def pathExists(thePath, makeBool):
