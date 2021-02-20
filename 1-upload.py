@@ -233,9 +233,9 @@ if __name__ == '__main__':
     parser.add_argument('--video', metavar='', dest='makeVideo', default=True, required=False, help='make a simple video with the provided||boosted audio?' )
     parser.add_argument('--upload', metavar='', dest='uploadVideo', default=True, required=False, help='upload simple video?' )
     parser.add_argument('--audioIn', metavar='', dest='theAudioDirIn', default='input/raw_audio', required=False, help='path to folder containing mp3s' )
-    parser.add_argument('--audioOut', metavar='', dest='theAudioDirOut', default='output/processed_audio', required=False, help='path to folder containing mp3s')
+    parser.add_argument('--audioOut', metavar='', dest='theAudioDirOut', default='intermediate/processed_audio', required=False, help='path to folder containing mp3s')
     parser.add_argument('--image', metavar='', dest='theImagePath', default='lecture-daemon_data/testPattern.png', required=False, help='path to still image to use for video')
-    parser.add_argument('--videoOut', metavar='', dest='theRawVideoDir', default='output/temp_video', required=False, help='path to the folder videos will be written to')
+    parser.add_argument('--videoOut', metavar='', dest='theRawVideoDir', default='intermediate/temp_video', required=False, help='path to the folder videos will be written to')
     parser.add_argument('--category', default='27', help='Numeric video category. ' + 'See https://developers.google.com/youtube/v3/docs/videoCategories/list')
     parser.add_argument('--keywords', help='Video keywords, comma separated', default='')
     parser.add_argument('--privacy-status', metavar='', dest='privacy_status', default='unlisted', required=False, help='options are: public, private, unlisted' )
@@ -262,7 +262,7 @@ if __name__ == '__main__':
     if aTest:
         args.theAudioDirIn = aTest
 
-    aTest = pathExists("output")
+    aTest = pathExists("intermediate")
 
     aTest = pathExists(args.theAudioDirOut)
     if aTest:
