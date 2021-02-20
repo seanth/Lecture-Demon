@@ -87,7 +87,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Who wants some popcorn?')
     parser.add_argument('--path', metavar='', dest='thePath', required=True, help='Path to the powerpoint file OR path to the timing csv' )
     parser.add_argument('--align', metavar='', dest='mergeTiming', default=True, required=False, help='insert slide timing to alignment csv?' )
-    parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='output/lecture_alignments', required=False, help='path to place alignments')
+    parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='intermediate/lecture_alignments', required=False, help='path to place alignments')
     
     args = parser.parse_args()
 
