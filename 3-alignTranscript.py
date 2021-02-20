@@ -100,13 +100,13 @@ if __name__ == '__main__':
     parser.add_argument('--alignment', metavar='', dest='makeAlignment', default=True, required=False, help='use gentle to make an alignment csv?' )
     parser.add_argument('--tokens', metavar='', dest='makeTokens', default=True, required=False, help='assign word tokens to words in alignment csv?' )
 
-    parser.add_argument('--audioDir', metavar='', dest='theAudioDir', default='output/processed_audio', required=False, help='path to folder containing processed mp3s' )
-    parser.add_argument('--transcriptDir', metavar='', dest='theTranscriptDir', default='output/lecture_transcripts', required=False, help='path to place transcripts')
-    parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='output/lecture_alignments', required=False, help='path to place alignments')
+    parser.add_argument('--audioDir', metavar='', dest='theAudioDir', default='intermediate/processed_audio', required=False, help='path to folder containing processed mp3s' )
+    parser.add_argument('--transcriptDir', metavar='', dest='theTranscriptDir', default='intermediate/lecture_transcripts', required=False, help='path to place transcripts')
+    parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='intermediate/lecture_alignments', required=False, help='path to place alignments')
     args = parser.parse_args()
 
     
-    outputAlignmentDir = 'output/lecture_alignments'
+    outputAlignmentDir = 'intermediate/lecture_alignments'
     #transcriptDir = 'output/lecture_transcripts'
     #inputAudioDir = 'output/processed_audio'
 
