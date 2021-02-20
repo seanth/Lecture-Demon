@@ -69,6 +69,7 @@ def makeSlate(theSlide, theCourseName, theLectureName, theSlidePath):
     #Class name
     textX=int(theWidth/2)
     textY=gutter
+
     d.text((textX,textY), theCourseName, font=fnt36, fill=(255, 255, 255))
 
     ###############################################################
@@ -181,16 +182,16 @@ if __name__ == '__main__':
     parser.add_argument('--makeSlate', metavar='', dest='makeSlate', default=True, required=False, help='Make a slate image? (True)' )
     parser.add_argument('--course', metavar='', dest='theCourseName', default='', required=False, help='Name of the course for slate (blank)' )
     parser.add_argument('--lecture', metavar='', dest='theLectureName', default='', required=False, help='Name of the lecture for slate (file name)' )
-    parser.add_argument('--slateQuery', metavar='', dest='querySlateOK', default=True, required=False, help='Ask the user whether the slate is OK before proceeding (True)')
+    parser.add_argument('--slateQuery', metavar='', dest='querySlateOK', default=True, required=False, help='Ask the user whether the slate is OK before proceeding (True)' )
 
     parser.add_argument('--timing', metavar='', dest='makeTiming', default=True, required=False, help='Read pptx and make timing csv? (True)' )
-    #parser.add_argument('--align', metavar='', dest='mergeTiming', default=True, required=False, help='insert slide timing to alignment csv?' )
+    ##parser.add_argument('--align', metavar='', dest='mergeTiming', default=True, required=False, help='insert slide timing to alignment csv?' )
 
     parser.add_argument('--media', metavar='', dest='extractMedia', default=True, required=False, help='Extract media(videos) from pptx? (True)' )
 
-    parser.add_argument('--slideDir', metavar='', dest='theSlideDir', default='output/lecture_slides', required=False, help='Path to the parent folder for slides')
-    parser.add_argument('--timingDir', metavar='', dest='theTimingDir', default='output/lecture_timing', required=False, help='Path to place timings')
-    #parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='output/lecture_alignments', required=False, help='Path to place alignments')
+    parser.add_argument('--slideDir', metavar='', dest='theSlideDir', default='intermediate/lecture_slides', required=False, help='Path to the parent folder for slides' )
+    parser.add_argument('--timingDir', metavar='', dest='theTimingDir', default='intermediate/lecture_timing', required=False, help='Path to place timings' )
+    ##parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='output/lecture_alignments', required=False, help='Path to place alignments')
 
     args = parser.parse_args()
 
@@ -234,6 +235,7 @@ if __name__ == '__main__':
                 #######
                 #Send data to info to the function to make the start slate
                 slateQuery = ''
+                print("why?")
                 while slateQuery != 'y':
                     theSlide = random.choice(slideList)
                     makeSlate(theSlide, args.theCourseName, args.theLectureName, thePath)
@@ -273,6 +275,9 @@ if __name__ == '__main__':
                     if args.theCourseName == '':
                         print("     *** No course name provided")
                     else:
+                        #this is a terrible solution to allow new line breaks"
+                        #enjoy. STH 2021-0114
+                        args.theCourseName = args.theCourseName.replace('^n','\n')
                         print("     Course name:     %s"  % (args.theCourseName))
 
                     #######
