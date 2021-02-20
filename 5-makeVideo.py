@@ -411,7 +411,7 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
                 while (os.path.splitext(theSlideList[theSRTVIndexList[i+1]])[1] in audioSuffixList) or (os.path.exists(os.path.join(theSlideDir,theSlideList[theSRTVIndexList[i+1]])) == False):
                     i=i+1
                 theStop = float(startDataList[theSRTVIndexList[i+1]])
-
+        print(i)
         theStart = datetime.timedelta(seconds=theStart) #convert to datetime
         theStop = datetime.timedelta(seconds=theStop) #convert to datetime
 
@@ -837,11 +837,11 @@ if __name__ == '__main__':
     parser.add_argument('--mkvideo', metavar='', dest='mkvideo', default=True, required=False, help='generate the final video?' )
     parser.add_argument('--addsrt', metavar='', dest='addsrt', default=True, required=False, help='add text overlays from srt(if exists)?' )
 
-    parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='output/lecture_alignments', required=False, help='path to alignment file directory')
-    parser.add_argument('--srtvDir', metavar='', dest='theSRTVDir', default='output/lecture_srtv', required=False, help='path to SRTV file directory')
-    parser.add_argument('--srtDir', metavar='', dest='theSRTDir', default='output/lecture_srt', required=False, help='path to SRT file directory')
-    parser.add_argument('--audioDir', metavar='', dest='theAudioDir', default='output/processed_audio', required=False, help='path to folder containing processed mp3s' )
-    parser.add_argument('--slideDir', metavar='', dest='theSlideDir', default='output/lecture_slides', required=False, help='general path to slide images')
+    parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='intermediate/lecture_alignments', required=False, help='path to alignment file directory')
+    parser.add_argument('--srtvDir', metavar='', dest='theSRTVDir', default='intermediate/lecture_srtv', required=False, help='path to SRTV file directory')
+    parser.add_argument('--srtDir', metavar='', dest='theSRTDir', default='intermediate/lecture_srt', required=False, help='path to SRT file directory')
+    parser.add_argument('--audioDir', metavar='', dest='theAudioDir', default='intermediate/processed_audio', required=False, help='path to folder containing processed mp3s' )
+    parser.add_argument('--slideDir', metavar='', dest='theSlideDir', default='intermediate/lecture_slides', required=False, help='general path to slide images')
     parser.add_argument('--videoOut', metavar='', dest='theCandidateVideoDir', default='output/candidate_video', required=False, help='path to the folder videos will be written to')
     args = parser.parse_args()
     print(args)
