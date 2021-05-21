@@ -235,7 +235,6 @@ if __name__ == '__main__':
                 #######
                 #Send data to info to the function to make the start slate
                 slateQuery = ''
-                print("why?")
                 while slateQuery != 'y':
                     theSlide = random.choice(slideList)
                     makeSlate(theSlide, args.theCourseName, args.theLectureName, thePath)
