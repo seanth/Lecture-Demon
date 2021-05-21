@@ -9,7 +9,10 @@ from moviepy.audio.AudioClip import AudioArrayClip
 from PIL import Image                       
 from pydub import AudioSegment              
 import audiosegment as audiosegwrap                         
-import ffmpeg                               
+import ffmpeg   
+
+import numpy as np
+import pyrubberband as pyrb                            
 
 
 theLeaderImage = "lecture-daemon_data/leaderImage.png"
@@ -18,7 +21,7 @@ videoSuffixList = ['.mp4', '.m4v', '.mov']
 audioSuffixList = ['.aiff', '.mp3', '.wav', ".m4a"]
 imageSuffixList = ['.png','.jpg','.jpeg','.gif']
 
-theSlateDuration = 5
+theSlateDuration = 0
 outroDuration = 5
 
 def booleanCheck(theVariable):
@@ -382,7 +385,7 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
                 if theArg == "duration":
                     theTextDuration = float(theValue)
                     theStop = (float(startDataList[theSRTVIndexList[i]])+theTextDuration)-float(lectureStartTime)
-            print("                %s --> %s" %(datetime.timedelta(seconds=theStart+float(lectureStartTime)), datetime.timedelta(seconds=theStop+float(lectureStartTime))))
+            print("                %s --> %s\n" %(datetime.timedelta(seconds=theStart+float(lectureStartTime)), datetime.timedelta(seconds=theStop+float(lectureStartTime))))
             if theMeta == "nan": theMeta = ""
             theStart = datetime.timedelta(seconds=theStart+theSlateDuration) #convert to datetime
             theStop = datetime.timedelta(seconds=theStop+theSlateDuration) #convert to datetime
@@ -410,12 +413,13 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
             if theStop=="":
                 while (os.path.splitext(theSlideList[theSRTVIndexList[i+1]])[1] in audioSuffixList) or (os.path.exists(os.path.join(theSlideDir,theSlideList[theSRTVIndexList[i+1]])) == False):
                     i=i+1
+                    print("                ERROR: Slide may not exist")
                 theStop = float(startDataList[theSRTVIndexList[i+1]])
-        print(i)
+        #print(i)
         theStart = datetime.timedelta(seconds=theStart) #convert to datetime
         theStop = datetime.timedelta(seconds=theStop) #convert to datetime
 
-        print("                %s --> %s" %(theStart, theStop))
+        print("                %s --> %s\n" %(theStart, theStop))
 
         if theMeta == "nan": theMeta = ""
         theIndex = len(theSRTVList)+1
@@ -446,29 +450,94 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
 def processAudio(theSRTVList, theAudioDir, theLectureName, lectureStartTime, lectureStopTime):
     audioFilePath = os.path.join(theAudioDir, theLectureName+".mp3")
     theLectureAudio = "" #just a place holder that gives a logic check later
+    theAudioClip = "" #just a place holder that gives a logic check later
     madeAnAudioEdit = False
 
     #I should have made things a form of json form the start
     # :( STH 2020-0805
-    for anEntry in theSRTVList:    
-        theMetaList = [x.strip() for x in anEntry.proprietary.split(';')]
+    #for anEntry in theSRTVList:
+    for i in theSRTVList:   
+        thePosition = ((i.start).total_seconds())*1000.0 #convert to millisec 
+        theMetaList = [x.strip() for x in i.proprietary.split(';')]
         theGain = 0 #no ducking
-        theSlide = anEntry.content
-        theFileSuffix = os.path.splitext(theSlide)[1]
-        ##########################################################################################
-        for aMetaArg in theMetaList:
+        #theSlide = anEntry.content
+        theContent= i.content
+        theFileSuffix = os.path.splitext(theContent)[1]
+        if theFileSuffix in audioSuffixList:
+            #################################
+            #only load the lecture audio once
+            if theLectureAudio == "": 
+                print("          Loading lecture audio file %s" % audioFilePath)
+                theLectureAudio = AudioSegment.from_file(audioFilePath)       
+            #################################
+            #only load the clip audio once
+            #if theAudioClip == "": 
+            print("          Loading audio clip %s" % theContent)
+            theAudioClip = AudioSegment.from_file(theContent)
+            #################################   
+            theDuration = theAudioClip.duration_seconds
+            
+            for aMetaArg in theMetaList:
+                ###########################
+                #split the arg and values
+                theMetaArgList = [x.strip() for x in aMetaArg.split(':')]
+                theArg = theMetaArgList[0]
+                theValue=""
+                if len(theMetaArgList)>1: theValue = theMetaArgList[1]
+                ###########################
+                if theArg == "duration":
+                    theNewDuration = float(theValue) #this assumes the duration is less than the clip length.                 
+                    #print("              Setting clip duration to %s" % (theDuration))
+                    #theAudioClip = theAudioClip[:theDuration*1000]
+                    #################################
+                    #experiment with altering the duration of sound clips
+                    #2021-0513 STH
+                    theAudioClipArray = np.array(theAudioClip.get_array_of_samples())
 
+                    sampleRate = theAudioClip.frame_rate
+                    tempoRatio=theDuration/theNewDuration
+                    #print(tempoRatio)
+                    if theNewDuration!=theDuration:
+                        print("              Adjusting duration of clip to be %s seconds" % theNewDuration)
+
+                    theAudioClipArray_fast = pyrb.time_stretch(theAudioClipArray, sampleRate, tempoRatio)
+                    theAudioClipArray = np.int16(theAudioClipArray_fast * 2 ** 15)
+
+                    channels = 2 if (theAudioClipArray_fast.ndim == 2 and theAudioClipArray_fast.shape[1] == 2) else 1
+                    
+                    theAudioClip = AudioSegment(theAudioClipArray.tobytes(), frame_rate=sampleRate, sample_width=2, channels=channels)
+                    #sys.exit()
+                ###########################
+                if theArg == "replace":
+                    print("              Replacing audio at time %s seconds" % (thePosition/1000))
+                    print("                   Ducking audio file")
+                    theGain = -100 #duck the audio if the meta data says replace
+                ###########################
+                if theArg == "overlay":
+                    print("              Overlaying clip onto main audio")
+
+            ################
+            print("              Combining audio...")
+            theLectureAudio = theLectureAudio.overlay(theAudioClip, position=(thePosition), gain_during_overlay=theGain)
+            madeAnAudioEdit = True
+
+
+        ##########################################################################################
+        #audio ducking, especially for use with video insertion
+        for aMetaArg in theMetaList:
             ###########################
             #split the arg and values
             theMetaArgList = [x.strip() for x in aMetaArg.split(':')]
             theArg = theMetaArgList[0]
+            theValue = ""
             if len(theMetaArgList)>1: theValue = theMetaArgList[1]
             ###########################
             if theArg == "lecture":
+                ###This allows for multiple sub metas after the :
                 theSubValue = [x.strip() for x in theValue.split(',')]
                 if theSubValue[0] == "mute":
-                    thePosition = ((anEntry.start).total_seconds())*1000.0 #convert to millisec
-                    theStop = ((anEntry.end).total_seconds())*1000.0 #convert to millisec
+                    thePosition = ((i.start).total_seconds())*1000.0 #convert to millisec
+                    theStop = ((i.end).total_seconds())*1000.0 #convert to millisec
                     theDuration = theStop-thePosition
                     if len(theSubValue)>1:
                         #theStop = float(theSubValue[1])*1000.0 #convert to millisec
@@ -490,43 +559,63 @@ def processAudio(theSRTVList, theAudioDir, theLectureName, lectureStartTime, lec
                     #the following might be a saner way to do this:
                     #theLectureAudio = theLectureAudio.fade(to_gain=theGain, start=thePosition, end=theStop)
                     madeAnAudioEdit = True
+        ##########################################################################################
 
-        ##########################################################################################
-        #insert pad (silent) audio if needed
-        #will probably need to provide a way to insert into existing audio
-        #but for simplicity right now, just assume that pad gets put at the start
-        #STH 2020-0621
-        if 'lecture:insert' in theMetaList:
-            if madeAnAudioEdit == False: print("          Audio edits detected...")
-            if theLectureAudio == "": 
-                print("          Loading audio file %s" % audioFilePath)
-                theLectureAudio = AudioSegment.from_file(audioFilePath)
-            theDuration = 5.0 #just give it a default
-            for j in theMetaList:
-                theSublist = [x.strip() for x in j.split(':')]
-                if theSublist[0].strip() == "duration":
-                    theDuration = float(theSublist[1]) #if there is a defined duration, use that                  
-            print("              Inserting pad silence at start. %s seconds" % (theDuration))
-            theLectureAudio = AudioSegment.silent(duration=theDuration*1000)+theLectureAudio #x1000 to convert sec to millisec
-        ##########################################################################################
-        #This section does things like insert the correct word if you screwed up in lecture
-        #The cannonical example is saying "latitude" when you(I) mean "longitude"
-        if theFileSuffix in audioSuffixList:
-            #only load the lecture audio once
-            if madeAnAudioEdit == False: print("          Audio edits detected...")
-            if theLectureAudio == "": 
-                print("          Loading audio file %s" % audioFilePath)
-                theLectureAudio = AudioSegment.from_file(audioFilePath)       
-            #thePosition = ((anEntry.start).total_seconds()+allPadDuration)*1000.0 #convert to millisec
-            thePosition = ((anEntry.start).total_seconds())*1000.0 #convert to millisec
-            #theStop = ((anEntry.end).total_seconds())*1000.0 #convert to millisec
-            if theArg == 'replace':
-                #theAudioClip = AudioSegment.from_file(audioFilePath)
-                theAudioClip = AudioSegment.from_file(theSlide)  
-                theGain = -100 #duck the audio if the meta data says replace
-            print("              Replacing audio at time %s seconds" % (thePosition/1000))
-            theLectureAudio = theLectureAudio.overlay(theAudioClip, position=(thePosition), gain_during_overlay=theGain)
-            madeAnAudioEdit = True
+
+        # ##########################################################################################
+        # #insert pad (silent) audio if needed
+        # #will probably need to provide a way to insert into existing audio
+        # #but for simplicity right now, just assume that pad gets put at the start
+        # #STH 2020-0621
+        # if 'lecture:insert' in theMetaList:
+        #     if madeAnAudioEdit == False: print("          507 Audio edits detected...")
+        #     if theLectureAudio == "": 
+        #         print("          Loading audio file %s" % audioFilePath)
+        #         theLectureAudio = AudioSegment.from_file(audioFilePath)
+        #     theDuration = 5.0 #just give it a default
+        #     for j in theMetaList:
+        #         theSublist = [x.strip() for x in j.split(':')]
+        #         if theSublist[0].strip() == "duration":
+        #             theDuration = float(theSublist[1]) #if there is a defined duration, use that                  
+        #     print("              Inserting pad silence at start. %s seconds" % (theDuration))
+        #     theLectureAudio = AudioSegment.silent(duration=theDuration*1000)+theLectureAudio #x1000 to convert sec to millisec
+        # ##########################################################################################
+        # #This section does things like insert the correct word if you screwed up in lecture
+        # #The cannonical example is saying "latitude" when you(I) mean "longitude"
+        # if theFileSuffix in audioSuffixList:
+        #     if madeAnAudioEdit == False: print("          523 Audio edits detected...")
+        #     #################################
+        #     #only load the lecture audio once
+        #     if theLectureAudio == "": 
+        #         print("          Loading audio file %s" % audioFilePath)
+        #         theLectureAudio = AudioSegment.from_file(audioFilePath)       
+        #     #################################
+        #     #################################
+        #     #only load the clip audio once
+        #     if theAudioClip == "": 
+        #         print("          Loading audio clip %s" % theSlide)
+        #         theAudioClip = AudioSegment.from_file(theSlide)       
+        #     #################################
+        #     print("!!!!!!!")
+        #     print(theArg)
+        #     #thePosition = ((anEntry.start).total_seconds()+allPadDuration)*1000.0 #convert to millisec
+        #     thePosition = ((anEntry.start).total_seconds())*1000.0 #convert to millisec
+        #     #theStop = ((anEntry.end).total_seconds())*1000.0 #convert to millisec
+        #     if theArg == 'replace':
+        #         #theAudioClip = AudioSegment.from_file(audioFilePath)
+        #         print("              Ducking audio file")
+        #         theGain = -100 #duck the audio if the meta data says replace
+        #         print("              Replacing audio at time %s seconds" % (thePosition/1000))
+        #     if theArg == 'duration':
+        #         print("do duration stuff")
+        #     ################
+        #     #experiment in duration
+        #     print("trimming clip to 10 seconds")
+        #     print(theAudioClip.duration_seconds)
+        #     theAudioClip = theAudioClip[:10000]
+        #     ################
+        #     theLectureAudio = theLectureAudio.overlay(theAudioClip, position=(thePosition), gain_during_overlay=theGain)
+        #     madeAnAudioEdit = True
 
 
     ##########################################################################################
