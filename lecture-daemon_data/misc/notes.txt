@@ -20,6 +20,7 @@
 If providing a path to a csv ve a pptx for 4-xmlParseAlignTiming.py, --timing is False
 -remove trailing spaces from subtitle text so that if they are files they will match
 -allow for a duration ability when replacing audio
+-code assumes "start" is "Slide1.png". Make it actually read what is in the thing file
 
 
 
@@ -34,6 +35,14 @@ notes:
 	cut example:
 		../../../img_library/black.png	
 						"cut":{"duration":635.009999}
+
+##################
+inserting text respects the {\an#} format. For example:
+	{\an5}Some text.
+	These go into the slide/media column
+
+
+
 
 
 #1-audio2Video2Upload
@@ -72,7 +81,12 @@ python3 -m pip install moviepy
 python3 -m pip install Pillow
 python3 -m pip install pydub
 python3 -m pip install audiosegment
+brew install ffmpeg
 python3 -m pip install ffmpeg-python
+brew install rubberband
+python3 -m pip install numpy
+python3 -m pip install pyrubberband
+
 
 #######experiment with identifying speakers
 got download https://github.com/tyiannak/pyAudioAnalysis
