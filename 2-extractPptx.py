@@ -1,17 +1,17 @@
-from natsort import natsorted #pip install pandas, https://pypi.org/project/natsort/3.3.0/
+import os, sys, glob, random, datetime, textwrap, argparse, csv
 
 import xml.etree.ElementTree as ET
 
-import os, sys, glob, random, datetime, textwrap, argparse, csv
-
 from dateutil.relativedelta import relativedelta
-from PIL import Image, ImageDraw, ImageFont 
 from zipfile import ZipFile
 
 pathToUtils = "lecture-daemon_data"
 ###append the path to basic data files
 sys.path.append(pathToUtils)
 import fileUtils
+
+from PIL import Image, ImageDraw, ImageFont #python3 -m pip install Pillow
+from natsort import natsorted #python3 -m pip install pandas, python3 -m pip install natsort==3.3.0
 
 brandingImagePath = 'lecture-daemon_data/logo-white.png'
 
@@ -177,35 +177,27 @@ def saveTiming(timingList, theTimingDir, theBaseName):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Who wants some popcorn?')
-    parser.add_argument('--path', metavar='', dest='thePath', required=True, help='Path to the powerpoint file OR path to the timing csv' )
-    
+    parser.add_argument('--path', metavar='', dest='thePath', default='', help='Path to the powerpoint file OR path to the timing csv' )
     parser.add_argument('--makeSlate', metavar='', dest='makeSlate', default=True, required=False, help='Make a slate image? (True)' )
     parser.add_argument('--course', metavar='', dest='theCourseName', default='', required=False, help='Name of the course for slate (blank)' )
     parser.add_argument('--lecture', metavar='', dest='theLectureName', default='', required=False, help='Name of the lecture for slate (file name)' )
     parser.add_argument('--slateQuery', metavar='', dest='querySlateOK', default=True, required=False, help='Ask the user whether the slate is OK before proceeding (True)' )
-
     parser.add_argument('--timing', metavar='', dest='makeTiming', default=True, required=False, help='Read pptx and make timing csv? (True)' )
-    ##parser.add_argument('--align', metavar='', dest='mergeTiming', default=True, required=False, help='insert slide timing to alignment csv?' )
-
     parser.add_argument('--media', metavar='', dest='extractMedia', default=True, required=False, help='Extract media(videos) from pptx? (True)' )
-
     parser.add_argument('--slideDir', metavar='', dest='theSlideDir', default='intermediate/lecture_slides', required=False, help='Path to the parent folder for slides' )
     parser.add_argument('--timingDir', metavar='', dest='theTimingDir', default='intermediate/lecture_timing', required=False, help='Path to place timings' )
-    ##parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='output/lecture_alignments', required=False, help='Path to place alignments')
 
     args = parser.parse_args()
 
     print("\n\n")
 
-    #check and see whether destination folders exist
-    theSlideDir = fileUtils.pathExistsMake(args.theSlideDir)
-    #theAlignmentDir = fileUtils.pathExistsMake(args.theAlignmentDir)
+    ###########################################################################
+    #do some checks to see whether files and folders needed actually exist
+    thePath = fileUtils.pathExists(args.thePath)
+    theSlideDir = fileUtils.pathExistsMake(args.theSlideDir, True)
     theTimingDir = fileUtils.pathExistsMake(args.theTimingDir, True)
 
-    #is the path real?
-    thePath = fileUtils.pathExists(args.thePath)
-
-    ###############################################################
+    ###########################################################################
     fileorDir = fileUtils.isfile_or_dir(thePath)
     if fileorDir == "isDir":
         if args.makeSlate == True:
@@ -251,6 +243,19 @@ if __name__ == '__main__':
         if fileSuffix == ".pptx":
             slideFolder = os.path.join(theSlideDir, fileName)
             #########################################################################
+            ###Extract timing from xml in pptx
+            if args.makeTiming == True:        
+                xmlFileList = pptxSlideXML(thePath)
+
+                #format is: [timing in seconds(float), slide image name(str)]
+                timingList = slideTiming(thePath,xmlFileList)
+                saveTiming(timingList, theTimingDir, fileName)
+            #########################################################################
+            ###Extract videos from the pptx 
+            if args.extractMedia == True:
+                extractPptxMedia(thePath, slideFolder)
+
+            #########################################################################
             ###Make slate
             if args.makeSlate == True:
                 #check whether there is a slide folder matching the name of the pptx
@@ -290,26 +295,8 @@ if __name__ == '__main__':
                             slateQuery = input("     Satisfied with the slate? [y/N]")
                         else:
                             break
-            #########################################################################
-            ###Extract timing from xml in pptx
-            if args.makeTiming == True:        
-                xmlFileList = pptxSlideXML(thePath)
-                #print(xmlFileList)
 
-                #format is: [timing in seconds(float), slide image name(str)]
-                timingList = slideTiming(thePath,xmlFileList)
-                #print(timingList)
-                
-                saveTiming(timingList, theTimingDir, fileName)
-            #########################################################################
-            ###Extract videos from the pptx 
-            if args.extractMedia == True:
-                extractPptxMedia(thePath, slideFolder)
 
 
 
     print("Done")
-
-    #if fileorDir == "isDir":
-
-    ###############################################################
