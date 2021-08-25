@@ -2,6 +2,11 @@
 
 import argparse, glob, os, math, time, sys, json, datetime
 
+pathToUtils = "lecture-daemon_data"
+###append the path to basic data files
+sys.path.append(pathToUtils)
+import fileUtils
+
 ################################################################
 #The httplib module has been renamed to http.client in Python 3.
 #import httplib
@@ -98,29 +103,6 @@ def relativeSinceTrinity():
     formattedAnthropocene = "%02d-%02d-%02dT%02d:%02d:%02dZ" % (theDiff.years, theDiff.months, theDiff.days, theDiff.hours, theDiff.minutes, theDiff.seconds)
     #print(formattedAnthropocene)
     return formattedAnthropocene
-
-def pathExists(thePath):
-  ###does the folder containing audio files exist?
-    theFeedback="     Path '%s' found:    %s"
-    if os.path.exists(thePath)==False:
-        print(theFeedback % (thePath, "FALSE"))
-        #Make the dir if it doesn't exist
-        print("     Creating dir '%s'" % (thePath))
-        os.mkdir(thePath)
-        #sys.exit()
-    else:
-        print(theFeedback % (thePath, "TRUE"))
-        return os.path.abspath(thePath)
-
-def fileTypeExists(theFolderName, theFileSuffix):
-    ###are there actually mp3s in the folder?
-    tempVar = os.path.join(theFolderName, "*."+theFileSuffix)
-    theFeedback="     %s files found in input folder: %s"
-    if len(glob.glob(tempVar))<1:
-        print(theFeedback % (theFileSuffix, "FALSE"))
-        #sys.exit()
-    else:
-        print(theFeedback % (theFileSuffix, "TRUE"))
 
 def booleanCheck(theVariable):
     #assume theVariable is a string
@@ -229,9 +211,9 @@ def resumable_upload(request, theVideoFileName):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Who wants some popcorn?')
-    parser.add_argument('--audio', metavar='', dest='boostAudio', default=False, required=False, help='boost the audio?' )
-    parser.add_argument('--video', metavar='', dest='makeVideo', default=True, required=False, help='make a simple video with the provided||boosted audio?' )
-    parser.add_argument('--upload', metavar='', dest='uploadVideo', default=True, required=False, help='upload simple video?' )
+    parser.add_argument('--audio', metavar='', dest='boostAudio', default=False, required=False, help='boost the audio? (False)' )
+    parser.add_argument('--video', metavar='', dest='makeVideo', default=True, required=False, help='make a simple video with the provided||boosted audio? (True)' )
+    parser.add_argument('--upload', metavar='', dest='uploadVideo', default=True, required=False, help='upload simple video? (True)' )
     parser.add_argument('--audioIn', metavar='', dest='theAudioDirIn', default='input/raw_audio', required=False, help='path to folder containing mp3s' )
     parser.add_argument('--audioOut', metavar='', dest='theAudioDirOut', default='intermediate/processed_audio', required=False, help='path to folder containing mp3s')
     parser.add_argument('--image', metavar='', dest='theImagePath', default='lecture-daemon_data/testPattern.png', required=False, help='path to still image to use for video')
@@ -258,24 +240,14 @@ if __name__ == '__main__':
     
     ###########################################################################
     #do some checks to see whether files and folders needed actually exist
-    aTest = pathExists(args.theAudioDirIn)
-    if aTest:
-        args.theAudioDirIn = aTest
+    args.theAudioDirIn = fileUtils.pathExistsMake(args.theAudioDirIn, True)
+    fileUtils.pathExistsMake("intermediate", True)
+    args.theAudioDirOut = fileUtils.pathExistsMake(args.theAudioDirOut, True)
+    args.theRawVideoDir = fileUtils.pathExistsMake(args.theRawVideoDir, True)
+    args.theImagePath = fileUtils.pathExistsMake(args.theImagePath,False)
+    ###########################################################################
 
-    aTest = pathExists("intermediate")
-
-    aTest = pathExists(args.theAudioDirOut)
-    if aTest:
-        args.theAudioDirOut = aTest
-
-    aTest = pathExists(args.theImagePath)
-    if aTest:
-        args.theImagePath = aTest
-
-    aTest = pathExists(args.theRawVideoDir)
-    if aTest:
-        args.theRawVideoDir = aTest
-
+    ###########################################################################
     #check and see if boolean things are boolean
     if isinstance(args.boostAudio, str):
         args.boostAudio = booleanCheck(args.boostAudio)
@@ -283,9 +255,13 @@ if __name__ == '__main__':
         args.makeVideo = booleanCheck(args.makeVideo)
     if isinstance(args.uploadVideo, str):
         args.uploadVideo = booleanCheck(args.uploadVideo)
+    ###########################################################################
+
+    if fileUtils.fileTypeExists(args.theAudioDirIn, "mp3") == False:
+        print("       Exiting.")
+        sys.exit()
 
     if(args.boostAudio==True):
-        fileTypeExists(args.theAudioDirIn, "mp3")
         tempVar = os.path.join(args.theAudioDirIn, "*.mp3")
         for theFileName in glob.glob(tempVar):
             theAudioFileName = os.path.basename(theFileName)
@@ -299,7 +275,6 @@ if __name__ == '__main__':
             os.system(theCommand)
     else:
         tempVar = os.path.join(args.theAudioDirIn, "*.mp3")
-        print(tempVar)
         for theFileName in glob.glob(tempVar):
             theAudioFileName = os.path.basename(theFileName)
             theAudioFileName = os.path.splitext(theAudioFileName)[0]
@@ -310,7 +285,7 @@ if __name__ == '__main__':
             os.system(theCommand)
 
     if(args.makeVideo==True):
-        fileTypeExists(args.theAudioDirIn, "mp3")
+        #fileTypeExists(args.theAudioDirIn, "mp3")
         tempVar = os.path.join(args.theAudioDirOut, "*.mp3")
         for theFileName in glob.glob(tempVar):
             theAudioFileName = os.path.basename(theFileName)
@@ -319,7 +294,7 @@ if __name__ == '__main__':
             videoOutputPath = os.path.join(args.theRawVideoDir, theAudioFileName+".mp4")
             print("\n     Boosted audio file '%s' found" % theFileName)
             print("       Sending file to ffmpeg to generate video.....")    
-            theCommand="ffmpeg -loop 1 -i '%s' -i '%s' -c:a copy -shortest '%s' >/dev/null" % (args.theImagePath, theFileName, videoOutputPath)
+            theCommand="ffmpeg -loop 1 -i '%s' -i '%s' -pix_fmt yuv420p -c:a copy -shortest '%s' >/dev/null" % (args.theImagePath, theFileName, videoOutputPath)
             #print(theCommand)
             os.system(theCommand)
 
