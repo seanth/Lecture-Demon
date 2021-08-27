@@ -24,6 +24,11 @@ def insertTimings(theAlignmentFile, theTimingFile):
     if 'start' in metaDataList:
         startDataList = list(theAlignmentRead['start'])
         startRow = metaDataList.index('start')
+        #print(startRow)
+        #print(theAlignmentRead.at[startRow,'word'])
+        #print(theAlignmentRead.at[59,'word'])
+        theAlignmentRead=theAlignmentRead.reset_index(drop=True)
+        #print(theAlignmentRead.at[59,'word'])
         lectureStartTime=startDataList[startRow]
         print("         Lecture start meta data found: %s" % lectureStartTime)
         ####if there is not a slide listed next to the start meta, insert slide 1
@@ -92,7 +97,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     #check and see whether destination folders exist
-    theAlignmentDir = fileUtils.pathExistsMake(args.theAlignmentDir)
+    theAlignmentDir = fileUtils.pathExistsMake(args.theAlignmentDir, True)
 
     #does the  file exit?
     theFilePath = fileUtils.pathExists(args.thePath)
