@@ -5,6 +5,10 @@ import nltk #pip install nltk
 nltk.download('averaged_perceptron_tagger')
 nltk.download('universal_tagset')
 
+pathToUtils = "lecture-daemon_data"
+###append the path to basic data files
+sys.path.append(pathToUtils)
+import fileUtils
 
 from youtube_transcript_api import YouTubeTranscriptApi
 
@@ -21,22 +25,22 @@ broadcastIDFileName = 'lecture-daemon_data/broadcast_id_archive.csv'
 #         print(theFeedback % (thePath, "TRUE"))
 #         return os.path.abspath(thePath)
 
-def pathExistsMake(thePath, makeBool=False):
-  ###does the folder containing audio files exist?
-    theFeedback="     Path '%s' found:    %s"
-    if os.path.exists(thePath)==False:
-        print(theFeedback % (thePath, "FALSE"))
-        if makeBool==False:
-            print("        Exiting.")
-            sys.exit()
-        else:
-            #Make the dir if it doesn't exist
-            print("     Creating dir '%s'" % (thePath))
-            os.mkdir(thePath)
-            return os.path.abspath(thePath)
-    else:
-        print(theFeedback % (thePath, "TRUE"))
-        return os.path.abspath(thePath)
+# def pathExistsMake(thePath, makeBool=False):
+#   ###does the folder containing audio files exist?
+#     theFeedback="     Path '%s' found:    %s"
+#     if os.path.exists(thePath)==False:
+#         print(theFeedback % (thePath, "FALSE"))
+#         if makeBool==False:
+#             print("        Exiting.")
+#             sys.exit()
+#         else:
+#             #Make the dir if it doesn't exist
+#             print("     Creating dir '%s'" % (thePath))
+#             os.mkdir(thePath)
+#             return os.path.abspath(thePath)
+#     else:
+#         print(theFeedback % (thePath, "TRUE"))
+#         return os.path.abspath(thePath)
 
 def getTranscript(broadcastIDFileName, transcriptDir):
     #read in the saved video id,lecture name data
@@ -85,6 +89,7 @@ def alignTokens(alignmentDir):
         theWordList = list(alignmentRead['word'])
         tokenList=[]
         for i in theWordList:
+            #print(i)
             tagged = nltk.pos_tag([i], tagset='universal')
             tokenList.append(tagged[0][1])
 
@@ -111,12 +116,12 @@ if __name__ == '__main__':
     #inputAudioDir = 'output/processed_audio'
 
     #check and see whether file with video id's exists
-    broadcastIDFileName = pathExistsMake(broadcastIDFileName)
+    broadcastIDFileName = fileUtils.pathExists(broadcastIDFileName)
 
     #check and see whether destination folder for transcripts exists
-    transcriptDir = pathExistsMake(args.theTranscriptDir, True)
-    theAudioDirIn = pathExistsMake(args.theAudioDir)
-    theAlignmentDir = pathExistsMake(args.theAlignmentDir, True)
+    transcriptDir = fileUtils.pathExistsMake(args.theTranscriptDir, True)
+    theAudioDirIn = fileUtils.pathExistsMake(args.theAudioDir, True)
+    theAlignmentDir = fileUtils.pathExistsMake(args.theAlignmentDir, True)
 
     if args.downloadTranscript == True:
         print("     Attempting to download transcripts...") 
