@@ -42,7 +42,8 @@ inserting text respects the {\an#} format. For example:
 	These go into the slide/media column
 
 
-
+To get duration of a video:
+ffmpeg -i file.flv 2>&1 | grep "Duration"
 
 
 #1-audio2Video2Upload
