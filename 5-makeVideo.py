@@ -1,5 +1,10 @@
 import datetime, os, sys, argparse, glob, re, json, itertools
 
+pathToUtils = "lecture-daemon_data"
+###append the path to basic data files
+sys.path.append(pathToUtils)
+import fileUtils
+
 import pandas as pd                         
 import srt 			                        
 from moviepy.editor import VideoFileClip    
@@ -21,7 +26,7 @@ videoSuffixList = ['.mp4', '.m4v', '.mov']
 audioSuffixList = ['.aiff', '.mp3', '.wav', ".m4a"]
 imageSuffixList = ['.png','.jpg','.jpeg','.gif']
 
-theSlateDuration = 0
+theSlateDuration = 3
 outroDuration = 5
 
 def booleanCheck(theVariable):
@@ -700,10 +705,10 @@ def makeVideoFromSRTVList(theSRTVList, theSlideDir, audioFilePath, theLectureNam
                 # resize (keep aspect ratio)
                 #theVideoClip = theVideoClip.fx(vfx.resize, width=theSlateSize[0]*0.8)
                 if theVideoClip.w>theSlateSize[0]:
-                    print("          Video is too wide. Resizing...")
+                    print("              Video is too wide. Resizing...")
                     theVideoClip = theVideoClip.fx(vfx.resize, width=theSlateSize[0])
                 if theVideoClip.h>theSlateSize[1]:
-                    print("          Video is too high. Resizing...")
+                    print("              Video is too high. Resizing...")
                     #theVideoClip = theVideoClip.fx(vfx.resize, height=theSlateSize[1]*0.8)
                     theVideoClip = theVideoClip.fx(vfx.resize, height=theSlateSize[1])
                 for aMetaArg in theMetaList:
@@ -822,19 +827,19 @@ def makeVideoFromSRTVList(theSRTVList, theSlideDir, audioFilePath, theLectureNam
                 print("          Generating image clip...")
                 aSlide = ImageClip(theContent).set_duration(theDuration)
                 if aSlide.w>theSlateSize[0]:
-                    print("          Image is too wide. Resizing...")
+                    print("              Image is too wide. Resizing...")
                     #aSlide = aSlide.fx(vfx.resize, width=theSlateSize[0]*0.9)
                     aSlide = aSlide.fx(vfx.resize, width=theSlateSize[0])
                 if aSlide.h>theSlateSize[1]:
-                    print("          Image is too high. Resizing...")
+                    print("              Image is too high. Resizing...")
                     #aSlide = aSlide.fx(vfx.resize, width=theSlateSize[1]*0.9)
                     aSlide = aSlide.fx(vfx.resize, height=theSlateSize[1])
                 theSlideList.append(aSlide)
             else:
                 print("          Not video, image, or audio...")
                 for aMetaArg in theMetaList:
-                    print("************************")
-                    print("the start offset is %s" % theStartOffset)
+                    #print("************************")
+                    #print("the start offset is %s" % theStartOffset)
                     try:
                         aMetaArg = aMetaArg.replace("'", '"')
                         jsonDict = json.loads(aMetaArg)
@@ -849,7 +854,7 @@ def makeVideoFromSRTVList(theSRTVList, theSlideDir, audioFilePath, theLectureNam
                                 #theStop = (i.end).total_seconds()-theSlateDuration
                                 theStop = (i.end).total_seconds() + theSlateDuration - theStartOffset
                                 cutList.append([theStart,theStop])
-                                print(cutList)
+                                #print(cutList)
                     except:
                        continue
 
@@ -945,13 +950,13 @@ if __name__ == '__main__':
     if isinstance(args.addsrt, str):
         args.addsrt = booleanCheck(args.addsrt)
 
-    theSlideDir = pathExistsMake(args.theSlideDir)
-    theAlignmentDir = pathExistsMake(args.theAlignmentDir)
-    theAudioDir = pathExistsMake(args.theAudioDir)
-    theSRTDir = pathExistsMake(args.theSRTDir, True)
-    theSRTVDir = pathExistsMake(args.theSRTVDir, True)
-    theCandidateVideoDir = pathExistsMake(args.theCandidateVideoDir, True)
-    theLeaderImage = pathExistsMake(theLeaderImage)
+    theSlideDir = fileUtils.pathExistsMake(args.theSlideDir)
+    theAlignmentDir = fileUtils.pathExistsMake(args.theAlignmentDir)
+    theAudioDir = fileUtils.pathExistsMake(args.theAudioDir)
+    theSRTDir = fileUtils.pathExistsMake(args.theSRTDir, True)
+    theSRTVDir = fileUtils.pathExistsMake(args.theSRTVDir, True)
+    theCandidateVideoDir = fileUtils.pathExistsMake(args.theCandidateVideoDir, True)
+    theLeaderImage = fileUtils.pathExistsMake(theLeaderImage)
 
     ###Start reading in alignment files from the alignment directory
     tempVar = os.path.join(theAlignmentDir, "*.csv")
@@ -981,7 +986,7 @@ if __name__ == '__main__':
             #need the srtv file for processing audio and/or making the video
             theFileName = theLectureName+".srtv"
             theFileName = os.path.join(theSRTVDir, theFileName)
-            theFileName = pathExistsMake(theFileName)
+            theFileName = fileUtils.pathExistsMake(theFileName)
             print("         Opening '%s'" % (theLectureName+".srtv"))
             with open(theFileName) as theFile:
                 theFileData = theFile.read()
