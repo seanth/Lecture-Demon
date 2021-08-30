@@ -306,7 +306,7 @@ if __name__ == '__main__':
         #just blank the archive file
         open(broadcastIDFileName, 'w').close()
 
-        fileTypeExists(args.theRawVideoDir, "mp4")
+        fileUtils.fileTypeExists(args.theRawVideoDir, "mp4")
         tempVar = os.path.join(args.theRawVideoDir, "*.mp4")
         i = 0
         for theFileName in glob.glob(tempVar):
