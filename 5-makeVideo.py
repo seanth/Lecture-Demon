@@ -320,7 +320,7 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
                     theStart = float(startDataList[i])
                     theStop = theStart+theDuration
                     theIndex = len(theSRTVList)+1
-                    print("Cut at                %s --> %s" %(datetime.timedelta(seconds=theStart+float(lectureStartTime)), datetime.timedelta(seconds=theStop+float(lectureStartTime))))
+                    print("         Cut at %s --> %s" %(datetime.timedelta(seconds=theStart+float(lectureStartTime)), datetime.timedelta(seconds=theStop+float(lectureStartTime))))
                     theStart = datetime.timedelta(seconds=theStart) #convert to datetime
                     theStop = datetime.timedelta(seconds=theStop) #convert to datetime
 
@@ -390,6 +390,8 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
                 if theArg == "duration":
                     theTextDuration = float(theValue)
                     theStop = (float(startDataList[theSRTVIndexList[i]])+theTextDuration)-float(lectureStartTime)
+            #print(theStart)
+            #print(theStop)
             print("                %s --> %s\n" %(datetime.timedelta(seconds=theStart+float(lectureStartTime)), datetime.timedelta(seconds=theStop+float(lectureStartTime))))
             if theMeta == "nan": theMeta = ""
             theStart = datetime.timedelta(seconds=theStart+theSlateDuration) #convert to datetime
@@ -998,7 +1000,9 @@ if __name__ == '__main__':
         #next will be to use the list returned from makeSRTVFile() to process it and make necessary changes to the audio file
         #should also be an option to read in file eventually
         if args.editaudio == True:
-            audioFilePath = processAudio(theSRTVList, theAudioDir, theLectureName, lectureStartTime, lectureStopTime)
+            if fileUtils.pathExists(os.path.join(theAudioDir,theLectureName+".mp3")):
+                audioFilePath = processAudio(theSRTVList, theAudioDir, theLectureName, lectureStartTime, lectureStopTime)
+
         elif args.mkvideo == True:
             #need the audio to make the video
             theFileName = "EDITED - "+theLectureName+".mp3"
