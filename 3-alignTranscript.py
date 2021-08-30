@@ -79,7 +79,7 @@ def makeAlignments(transcriptDir, outputAlignmentDir, inputAudioDir):
             theCommand = "python3 '%s' -c -o '%s' '%s' '%s'" % (alignScript, alignmentFile, audioFilePath, theFileName)
             os.system(theCommand)
         else:
-            print("     '%s' missing. SKIPPING" % theAudioName)
+            print("         '%s' missing. SKIPPING" % theAudioName)
 
 def alignTokens(alignmentDir):
     tempVar = os.path.join(alignmentDir, "*.csv")
