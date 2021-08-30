@@ -26,6 +26,7 @@ If providing a path to a csv ve a pptx for 4-xmlParseAlignTiming.py, --timing is
 
 notes:
 	'stop' needs a slide present in the media column. It can't be alone
+	can't use a video as starting media. The work around is to put a slide before the video, but make it very short. Do not have the video start time match the slide start time
 	example video meta: video:mute;loop;duration:53.58
 						duration:51.1;video:mute
 						duration:74;lecture:mute
@@ -40,6 +41,22 @@ notes:
 inserting text respects the {\an#} format. For example:
 	{\an5}Some text.
 	These go into the slide/media column
+
+{\an1} bottom left
+{\an2} bottom center
+{\an3} bottom right
+{\an4} center left
+{\an5} center
+{\an6} center right
+{\an7} top left
+{\an8} top center
+{\an9} top left
+
+Can alter font size using html tags
+	Example: {/an9}<font size=10>Welcome to the Anthropocene</font>
+
+Even if a subtitle has a duration value, an error will be throw if there is no explicit end time defined
+
 
 
 To get duration of a video:
