@@ -38,7 +38,7 @@ def pathExists(thePath):
 def fileTypeExists(theFolderName, theFileSuffix):
     ###are there actually mp3s in the folder?
     tempVar = os.path.join(theFolderName, "*."+theFileSuffix)
-    theFeedback="     %s files found in input folder: %s"
+    theFeedback="     %s file(s) found in input folder: %s"
     if len(glob.glob(tempVar))<1:
         print(theFeedback % (theFileSuffix, "FALSE"))
         return False
