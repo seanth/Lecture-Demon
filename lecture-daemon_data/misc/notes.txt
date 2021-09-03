@@ -80,6 +80,29 @@ python3 -m pip install Pillow
 python3 -m pip install pandas
 python3 -m pip install nltk
 python3 -m pip install youtube-transcript-api
+
+#this has minor changes to allow csv to be output
+curl -o lecture-daemon_data/master.zip -L https://github.com/seanth/gentle/archive/master.zip
+
+unzip lecture-daemon_data/master.zip -d lecture-daemon_data/
+
+rm -r lecture-daemon_data/gentle-master/ext/kaldi
+
+curl -o lecture-daemon_data/gentle-master/ext/kaldi-master.zip -L https://github.com/kaldi-asr/kaldi/archive/7ffc9ddeb3c8436e16aece88364462c89672a183.zip
+
+unzip lecture-daemon_data/gentle-master/ext/kaldi-master.zip -d lecture-daemon_data/gentle-master/ext
+
+mv lecture-daemon_data/gentle-master/ext/kaldi-*/ lecture-daemon_data/gentle-master/ext/kaldi/
+
+cd lecture-daemon_data/gentle-master/ext
+./install_kaldi.sh
+
+
+cd lecture-daemon_data/gentle-master
+
+./install.sh
+
+
 https://github.com/seanth/gentle/archive/master.zip --> autodipop_data/gentle-master #this has minor changes to allow csv to be output
 https://github.com/kaldi-asr/kaldi/archive/7ffc9ddeb3c8436e16aece88364462c89672a183.zip --> autodipop_data/gentle-master/ext; rename folder to 'kaldi'
 	cd autodipop_data/gentle-master
