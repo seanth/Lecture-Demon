@@ -5,19 +5,20 @@ pathToUtils = "lecture-daemon_data"
 sys.path.append(pathToUtils)
 import fileUtils
 
-import pandas as pd                         
-import srt 			                        
-from moviepy.editor import VideoFileClip    
+import pandas as pd
+import srt #python3 -m pip install srt                     
+from moviepy.editor import VideoFileClip #python3 -m pip install moviepy 
 from moviepy.editor import *
 from moviepy.audio.AudioClip import AudioArrayClip
 
-from PIL import Image                       
-from pydub import AudioSegment              
-import audiosegment as audiosegwrap                         
-import ffmpeg   
+from PIL import Image
+from pydub import AudioSegment #python3 -m pip install pydub 
+import audiosegment as audiosegwrap #python3 -m pip install audiosegment
+import ffmpeg #python3 -m pip install ffmpeg
 
 import numpy as np
-import pyrubberband as pyrb                            
+#brew install rubberband
+import pyrubberband as pyrb #python3 -m pip install pyrubberband
 
 
 theLeaderImage = "lecture-daemon_data/leaderImage.png"
