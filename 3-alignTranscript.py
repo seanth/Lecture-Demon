@@ -1,16 +1,41 @@
+#this has minor changes to allow csv to be output
+# curl -o lecture-daemon_data/master.zip -L https://github.com/seanth/gentle/archive/master.zip
+
+# unzip lecture-daemon_data/master.zip -d lecture-daemon_data/
+
+# rm -r lecture-daemon_data/gentle-master/ext/kaldi
+# curl -o lecture-daemon_data/gentle-master/ext/kaldi-master.zip -L https://github.com/kaldi-asr/kaldi/archive/7ffc9ddeb3c8436e16aece88364462c89672a183.zip
+# unzip lecture-daemon_data/gentle-master/ext/kaldi-master.zip -d lecture-daemon_data/gentle-master/ext
+# mv lecture-daemon_data/gentle-master/ext/kaldi-*/ lecture-daemon_data/gentle-master/ext/kaldi/
+# touch lecture-daemon_data/gentle-master/ext/kaldi/tools/extras/python/.use_default_python
+##############
+# lecture-daemon_data/gentle-master/ext/kaldi/tools/extras/check_dependencies.sh
+#####will probably need automake and autoconf
+# brew install automake
+# brew install autoconf ##note that autoconf is a dependency for automake, so should get both with the above
+##############
+# cd lecture-daemon_data/gentle-master/ext/kaldi/tools && make && cd -
+# cd lecture-daemon_data/gentle-master/ext/kaldi/src && ./configure && make && cd -
+##############
+# cd lecture-daemon_data/gentle-master && ./install.sh && cd -
+
+#./install.sh
+
+
 import os, sys, csv, glob, argparse
 
 import pandas as pd #pip install pandas
 import nltk #pip install nltk
-nltk.download('averaged_perceptron_tagger')
-nltk.download('universal_tagset')
+from youtube_transcript_api import YouTubeTranscriptApi #pip install youtube-transcript-api
 
 pathToUtils = "lecture-daemon_data"
 ###append the path to basic data files
 sys.path.append(pathToUtils)
 import fileUtils
 
-from youtube_transcript_api import YouTubeTranscriptApi
+nltk.download('averaged_perceptron_tagger')
+nltk.download('universal_tagset')
+
 
 pathToGentle = 'lecture-daemon_data/gentle-master'
 broadcastIDFileName = 'lecture-daemon_data/broadcast_id_archive.csv'
