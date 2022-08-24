@@ -15,7 +15,7 @@ def insertTimings(theAlignmentFile, theTimingFile):
     print("          Opening alignment file: '%s'" % theAlignmentFile)
     theFileName = os.path.basename(theAlignmentFile)
     theAlignmentRead = pd.read_csv(theAlignmentFile, header=None, names=['word','match','start','stop','token','slide', 'meta'], dtype={'slide':'object', 'meta':'object'})
-    print(theTimingFile)
+    #print(theTimingFile)
     theTimingRead = pd.read_csv(theTimingFile, header=None, names=['start','slide'])
     #theTimingRead = theTimingRead[1:]
     metaDataList = list(theAlignmentRead['meta'])

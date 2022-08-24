@@ -14,7 +14,7 @@ from moviepy.audio.AudioClip import AudioArrayClip
 from PIL import Image
 from pydub import AudioSegment #python3 -m pip install pydub 
 import audiosegment as audiosegwrap #python3 -m pip install audiosegment
-import ffmpeg #python3 -m pip install ffmpeg
+import ffmpeg #python3 -m pip install ffmpeg-python
 
 import numpy as np
 #brew install rubberband
@@ -491,6 +491,7 @@ def processAudio(theSRTVList, theAudioDir, theLectureName, lectureStartTime, lec
                 theMetaArgList = [x.strip() for x in aMetaArg.split(':')]
                 theArg = theMetaArgList[0]
                 theValue=""
+                #print(theArg)
                 if len(theMetaArgList)>1: theValue = theMetaArgList[1]
                 ###########################
                 if theArg == "duration":
@@ -829,6 +830,18 @@ def makeVideoFromSRTVList(theSRTVList, theSlideDir, audioFilePath, theLectureNam
             elif theFileSuffix in imageSuffixList:
                 print("          Generating image clip...")
                 aSlide = ImageClip(theContent).set_duration(theDuration)
+                ################################################
+                ###Experimenting with audio over the start slate
+                ###STH 2021-1010
+                ###See also code @ ~895
+                # if i.index==1:
+                #     print("              Clip is start slide. Shortening for slate")
+                #     aSlide = ImageClip(theContent).set_duration(theDuration-theSlateDuration)
+                # else:
+                #     aSlide = ImageClip(theContent).set_duration(theDuration)
+                ###Turned off because it was messing up subtitles
+                ###STH 2021-1201
+                ################################################
                 if aSlide.w>theSlateSize[0]:
                     print("              Image is too wide. Resizing...")
                     #aSlide = aSlide.fx(vfx.resize, width=theSlateSize[0]*0.9)
@@ -877,12 +890,12 @@ def makeVideoFromSRTVList(theSRTVList, theSlideDir, audioFilePath, theLectureNam
         catedVideo = catedVideo.fx(vfx.resize, width=theSlateSize[0])
         #catedVideo = catedVideo.fx(vfx.resize, (theSlateSize[0],theSlateSize[1]))
         
+        ###Turned off as part of text-over-start slate changes ~line 835
         ################################################################################
         #insert the initial silence for the opening slate
         if theSlateDuration > 0:
             print("          Adding slate intro buffer...")
             theLectureAudio = AudioSegment.silent(duration=theSlateDuration*1000)+theLectureAudio #x1000 to convert sec to millisec
-        #durationInSeconds = len(theLectureAudio)/1000
 
         ################################################################################
         #convert the pydub audio into something moviepy can use
@@ -967,8 +980,7 @@ if __name__ == '__main__':
         theLectureName = os.path.basename(theFileName)
         print("         File found. Opening '%s'" % theLectureName)
         theLectureName = os.path.splitext(theLectureName)[0]
-        theAlignmentFile = pd.read_csv(theFileName, header=None, names=['word','match','start','stop','token','slide','meta'], encoding = "ISO-8859-1")
-
+        theAlignmentFile = pd.read_csv(theFileName, header=None, names=['word','match','start','stop','token','slide','meta'], usecols=[1,2,3,4,5,6,7], encoding = "ISO-8859-1")
         startDataList = list(theAlignmentFile['start'])
         stopDataList = list(theAlignmentFile['stop'])
         theSlideList = list(theAlignmentFile['slide'])

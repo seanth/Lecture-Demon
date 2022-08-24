@@ -75,13 +75,17 @@ def getTranscript(broadcastIDFileName, transcriptDir):
             theVideoID = row[0]
             theLectureName = row[1]
             theTranscriptFile = os.path.join(transcriptDir, theLectureName+".txt")
-            print("     Attempting to download transcript for '%s'" % theLectureName) 
-            theRawTranscript = YouTubeTranscriptApi.get_transcript(theVideoID)
-            transcriptFile = open(theTranscriptFile,"w")
-            for aDict in theRawTranscript:
-                transcriptFile.write(aDict['text']+"\n")
-            transcriptFile.close()
-            print("          Done")
+            print("     Attempting to download transcript for '%s'" % theLectureName)
+            try:
+                theRawTranscript = YouTubeTranscriptApi.get_transcript(theVideoID)
+                transcriptFile = open(theTranscriptFile,"w")
+                for aDict in theRawTranscript:
+                    transcriptFile.write(aDict['text']+"\n")
+                transcriptFile.close()
+                print("          Done")
+            except:
+                print("          ***Transcript for '%s' not available." % theLectureName)
+                print("          ***Video might need more time to be processed or could have a copyright restriction.")
     #consider a cli arg that would allow for clearing the info from the broadcast_id_archive.csv after transcript download        
 
 def makeAlignments(transcriptDir, outputAlignmentDir, inputAudioDir):

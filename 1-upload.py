@@ -262,10 +262,11 @@ if __name__ == '__main__':
     args.theImagePath = fileUtils.pathExistsMake(args.theImagePath,False)
     ###########################################################################
 
+
     ###########################################################################
     #check and see if boolean things are boolean
-    if isinstance(args.rmnoise, str):
-        args.rmnoise = booleanCheck(args.rmnoise)
+    # if isinstance(args.rmnoise, str):
+    #     args.rmnoise = booleanCheck(args.rmnoise)
     if isinstance(args.boostAudio, str):
         args.boostAudio = booleanCheck(args.boostAudio)
     if isinstance(args.makeVideo, str):
@@ -278,29 +279,41 @@ if __name__ == '__main__':
         print("       Exiting.")
         sys.exit()
 
+    ###########################################################################
+    # if args.rmnoise != False:
+    #     print("lsdfhljksah")
+    #     theAmbientIn = fileUtils.pathExists(args.rmnoise)
+    # sys.exit()
 
-    if(args.rmnoise==True):
+    print(args.rmnoise)
+    if(args.rmnoise!=False):
         tempVar = os.path.join(args.theAudioDirIn, "*.mp3")
         for theFileName in glob.glob(tempVar):
             theAudioFileName = os.path.basename(theFileName)
             theAudioFileName = os.path.splitext(theAudioFileName)[0]
             theAudioIn = os.path.join(args.theAudioDirIn,theAudioFileName+".mp3")
             theAudioOutPath = os.path.join(args.theAudioDirOut,theAudioFileName+".mp3")
-            theAmbientIn = os.path.join(args.theAmbientDirIn,theAudioFileName+"-amb.mp3")
+            if args.rmnoise == True:
+                theAmbientIn = os.path.join(args.theAmbientDirIn,theAudioFileName+"-amb.mp3")
+                theAmbientIn = fileUtils.pathExists(theAmbientIn)
+            elif args.rmnoise != False:
+                theAmbientIn = fileUtils.pathExists(args.rmnoise)
             theAmbientOut = os.path.join(args.theAmbientDirOut,theAudioFileName+".prof")
             theProcessedRawAudio = os.path.join(theProcessedRawAudioDir,theAudioFileName+".mp3")
-            fileUtils.pathExists(theAmbientIn)
+            
 
             theCommand = "sox '%s' -n noiseprof '%s'" % (theAmbientIn, theAmbientOut)
             print("         Generating ambient audio profile...")
             os.system(theCommand)
 
-            theCommand = "sox '%s' '%s' noisered '%s' 0.01" % (theAudioIn, theAudioOutPath, theAmbientOut)
+            theCommand = "sox '%s' '%s' noisered '%s' 0.25" % (theAudioIn, theAudioOutPath, theAmbientOut) #0.01 works well for mono apparently
             print("         Making audio with reduced ambient noise...")
             os.system(theCommand)
 
             print("         Clean up of raw audio file...")
             theCommand = "mv '%s' '%s'" % (theAudioIn, theProcessedRawAudio)
+            #print(theCommand)
+            #sys.exit()
             os.system(theCommand)
     elif(args.boostAudio==True):
         tempVar = os.path.join(args.theAudioDirIn, "*.mp3")
@@ -369,8 +382,8 @@ if __name__ == '__main__':
                 theVideoFileName = os.path.basename(theFileName)
                 theVideoFileName = os.path.splitext(theAudioFileName)[0]
                 theProcessedTmpVideo = os.path.join(args.theRawVideoDir,theVideoFileName+".mp4")
-
                 theCommand = "mv %s %s" % (theFileName, theProcessedTmpVideo)
+                print(theCommand)
                 os.system(theCommand)
             except HttpError as e:
                 print('An HTTP error %d occurred:\n%s' % (e.resp.status, e.content))
