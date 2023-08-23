@@ -12,6 +12,12 @@ echo "Installing requirements..."
 brew install ffmpeg
 brew install rubberband
 
+brew install wget
+brew install automake
+brew install sox
+brew install subversion
+brew install openblas
+
 
 #this has minor changes to allow csv to be output
 #download edited gentle zip to lecture-daemon_data folder
@@ -21,7 +27,9 @@ unzip lecture-daemon_data/master.zip -d lecture-daemon_data/
 #remove the existing kaldi folder
 rm -r lecture-daemon_data/gentle-master/ext/kaldi
 #download kaldi zip to lecture-daemon_data folder
-curl -o lecture-daemon_data/gentle-master/ext/kaldi-master.zip -L https://github.com/kaldi-asr/kaldi/archive/7ffc9ddeb3c8436e16aece88364462c89672a183.zip
+curl -o lecture-daemon_data/gentle-master/ext/kaldi-master.zip -L https://github.com/kaldi-asr/kaldi/archive/498b25db122ec68a96aee154b9d829030adfae4c.zip
+
+#curl -o lecture-daemon_data/gentle-master/ext/kaldi-master.zip -L https://github.com/kaldi-asr/kaldi/archive/7ffc9ddeb3c8436e16aece88364462c89672a183.zip
 #unzip
 unzip lecture-daemon_data/gentle-master/ext/kaldi-master.zip -d lecture-daemon_data/gentle-master/ext
 #rename the existing folder

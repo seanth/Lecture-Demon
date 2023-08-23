@@ -14,7 +14,8 @@ import fileUtils
 def insertTimings(theAlignmentFile, theTimingFile):
     print("          Opening alignment file: '%s'" % theAlignmentFile)
     theFileName = os.path.basename(theAlignmentFile)
-    theAlignmentRead = pd.read_csv(theAlignmentFile, header=None, names=['word','match','start','stop','token','slide', 'meta'], dtype={'slide':'object', 'meta':'object'})
+    #theAlignmentRead = pd.read_csv(theAlignmentFile, header=None, names=['word','match','start','stop','token','slide', 'meta'], dtype={'slide':'object', 'meta':'object'})
+    theAlignmentRead = pd.read_csv(theAlignmentFile, header=None, names=['word','start','stop','token','slide', 'meta'], dtype={'slide':'object', 'meta':'object'})
     #print(theTimingFile)
     theTimingRead = pd.read_csv(theTimingFile, header=None, names=['start','slide'])
     #theTimingRead = theTimingRead[1:]
@@ -92,7 +93,7 @@ def insertTimings(theAlignmentFile, theTimingFile):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Who wants some popcorn?')
     parser.add_argument('--path', metavar='', dest='thePath', required=True, help='Path to the powerpoint file OR path to the timing csv' )
-    parser.add_argument('--align', metavar='', dest='mergeTiming', default=True, required=False, help='insert slide timing to alignment csv?' )
+    parser.add_argument('--align', metavar='', dest='mergeTiming', default=True, required=False, help='insert slide timing to alignment csv? Default True' )
     parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='intermediate/lecture_alignments', required=False, help='path to place alignments')
     
     args = parser.parse_args()
@@ -107,7 +108,9 @@ if __name__ == '__main__':
 
 
     if args.mergeTiming == True:
-        theBaseName = theBaseName.rstrip("-timing")
+        print(theBaseName)
+        theBaseName = theBaseName.removesuffix("-timing")
+        print("blabla")
         print(theBaseName)
         #does the alignment file exist?
         theAlignmentFilePath = os.path.join(theAlignmentDir,theBaseName+".csv")

@@ -332,19 +332,22 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
     allMediaSuffixList = imageSuffixList + videoSuffixList + audioSuffixList
     for i in range(len(theSRTVIndexList)):
         theSlide = theSlideList[theSRTVIndexList[i]]
-        print("             %s" % (theSlide))
         theFileSuffix = os.path.splitext(theSlide)[1]
         if (theFileSuffix in allMediaSuffixList):
             theSlide = os.path.join(theSlideDir,theSlide)
-
+            theSlide = os.path.relpath(theSlide)
+        print("             %s" % (theSlide))
         theMeta = str(metaDataList[theSRTVIndexList[i]])
         theStart = float(startDataList[theSRTVIndexList[i]])
         theStop = ""
         theMetaList= [x.strip() for x in theMeta.split(';')]
+        #print(theFileSuffix)
         if i == len(theSRTVIndexList)-1:
             #this just pads the ends so last slide stays up to the end
             lectureStopTime = float(lectureStopTime)
             theStop = float(lectureStopTime+(outroDuration))
+            #print(theStop)
+            #sys.exit()
         elif theFileSuffix in videoSuffixList:
             #read in the video clip
             theVideoClip = VideoFileClip(theSlide)
@@ -419,14 +422,20 @@ def makeSRTVFile(theLectureName, theSRTVIndexList, theSlideList, theSlideDir, me
                     theStop = float(theStart+float(theValue))
             ############
             if theStop=="":
-                while (os.path.splitext(theSlideList[theSRTVIndexList[i+1]])[1] in audioSuffixList) or (os.path.exists(os.path.join(theSlideDir,theSlideList[theSRTVIndexList[i+1]])) == False):
+                while (os.path.splitext(theSlideList[theSRTVIndexList[i+1]])[1] in audioSuffixList) or (
+                    os.path.exists(os.path.relpath(os.path.join(theSlideDir,theSlideList[theSRTVIndexList[i+1]]))) == False):
+                    #print(theSlideDir)
+                    #print(theSlideList[theSRTVIndexList[i+1]])
+                    #print(os.path.relpath(os.path.join(theSlideDir,theSlideList[theSRTVIndexList[i+1]])))
+                    #print(os.path.isfile(os.path.relpath(os.path.join(theSlideDir,theSlideList[theSRTVIndexList[i+1]]))))
                     i=i+1
                     print("                ERROR: Slide may not exist")
                 theStop = float(startDataList[theSRTVIndexList[i+1]])
+                #print(theStop)
+                #print(datetime.timedelta(seconds=theStop))
         #print(i)
         theStart = datetime.timedelta(seconds=theStart) #convert to datetime
         theStop = datetime.timedelta(seconds=theStop) #convert to datetime
-
         print("                %s --> %s\n" %(theStart, theStop))
 
         if theMeta == "nan": theMeta = ""
@@ -942,15 +951,15 @@ if __name__ == '__main__':
     timerStartTime = datetime.datetime.now()
 
     parser = argparse.ArgumentParser(description='Who wants some popcorn?')
-    parser.add_argument('--mksrt', metavar='', dest='mksrt', default=True, required=False, help='make srt & srvt files?' )
-    parser.add_argument('--editaudio', metavar='', dest='editaudio', default=True, required=False, help='make edits to audio according to alignment file?' )
-    parser.add_argument('--mkvideo', metavar='', dest='mkvideo', default=True, required=False, help='generate the final video?' )
-    parser.add_argument('--addsrt', metavar='', dest='addsrt', default=True, required=False, help='add text overlays from srt(if exists)?' )
+    parser.add_argument('--mksrt', metavar='', dest='mksrt', default=True, required=False, help='make srt & srvt files? Default True' )
+    parser.add_argument('--editaudio', metavar='', dest='editaudio', default=True, required=False, help='make edits to audio according to alignment file? Default True' )
+    parser.add_argument('--mkvideo', metavar='', dest='mkvideo', default=True, required=False, help='generate the final video? Default True' )
+    parser.add_argument('--addsrt', metavar='', dest='addsrt', default=True, required=False, help='add text overlays from srt(if exists)? Default True' )
 
     parser.add_argument('--alignmentDir', metavar='', dest='theAlignmentDir', default='intermediate/lecture_alignments', required=False, help='path to alignment file directory')
     parser.add_argument('--srtvDir', metavar='', dest='theSRTVDir', default='intermediate/lecture_srtv', required=False, help='path to SRTV file directory')
     parser.add_argument('--srtDir', metavar='', dest='theSRTDir', default='intermediate/lecture_srt', required=False, help='path to SRT file directory')
-    parser.add_argument('--audioDir', metavar='', dest='theAudioDir', default='intermediate/processed_audio', required=False, help='path to folder containing processed mp3s' )
+    parser.add_argument('--audioDir', metavar='', dest='theAudioDir', default='intermediate/processed_audio/transcribed', required=False, help='path to folder containing processed mp3s' )
     parser.add_argument('--slideDir', metavar='', dest='theSlideDir', default='intermediate/lecture_slides', required=False, help='general path to slide images')
     parser.add_argument('--videoOut', metavar='', dest='theCandidateVideoDir', default='output/candidate_video', required=False, help='path to the folder videos will be written to')
     args = parser.parse_args()
@@ -980,7 +989,7 @@ if __name__ == '__main__':
         theLectureName = os.path.basename(theFileName)
         print("         File found. Opening '%s'" % theLectureName)
         theLectureName = os.path.splitext(theLectureName)[0]
-        theAlignmentFile = pd.read_csv(theFileName, header=None, names=['word','match','start','stop','token','slide','meta'], usecols=[1,2,3,4,5,6,7], encoding = "ISO-8859-1")
+        theAlignmentFile = pd.read_csv(theFileName, header=None, names=['word','start','stop','token','slide','meta'], usecols=[1,2,3,4,5,6], encoding = "ISO-8859-1")
         startDataList = list(theAlignmentFile['start'])
         stopDataList = list(theAlignmentFile['stop'])
         theSlideList = list(theAlignmentFile['slide'])
